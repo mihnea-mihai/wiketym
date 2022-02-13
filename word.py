@@ -10,16 +10,17 @@ import textwrap
 
 MEANING_POS = ['Noun', 'Verb', 'Adjective', 'Preposition']
 
+
 class Word:
     """
     >>> w = Word.get('natural', 'en')
     >>> w.etymology.wikitext
     >>> for t in w.etymology.templates:
     ...     t.type, t.gloss
-    
+
     >>> w.make_edge_mentions(w.etymology.templates[6])
     >>> w._words
-    
+
     """
     with open('langs.json') as file:
         langs: "dict[str, str]" = json.load(file)
@@ -41,24 +42,23 @@ class Word:
             cls._words[id].add_ascendants()
         # Return from stack anyway
         return cls._words[id]
-    
+
     @classmethod
     def strip(cls, lemma, lang_code):
         if cls.langs[lang_code] in ['Latin', 'Old High German',
-                                     'Ancient Greek', 'Old English']:
+                                    'Ancient Greek', 'Old English']:
             return (
                 lemma
-                    .replace('ā', 'a')
-                    .replace('ē', 'e')
-                    .replace('ī', 'i')
-                    .replace('ō', 'o')
-                    .replace('ū', 'u')
-                    .replace('î', 'i')
-                    .replace('ᾱ́', 'ά')
-                    .replace('ċ', 'c')
+                .replace('ā', 'a')
+                .replace('ē', 'e')
+                .replace('ī', 'i')
+                .replace('ō', 'o')
+                .replace('ū', 'u')
+                .replace('î', 'i')
+                .replace('ᾱ́', 'ά')
+                .replace('ċ', 'c')
             )
         return lemma
-
 
     def __init__(self, lemma: str, lang_code):
         self.indent = Word._indent
@@ -67,7 +67,7 @@ class Word:
         self.lemma = lemma
         self.lang_code = lang_code
         try:
-            self.lang = self.langs[self.lang_code] # ok to throw error
+            self.lang = self.langs[self.lang_code]  # ok to throw error
         except KeyError:
             raise KeyError(f'Language code {self.lang_code} not found!')
         print('\t' * Word._indent, self)
@@ -81,7 +81,7 @@ class Word:
         # self.descendants = []
         # if self.section and not self.meaning:
         #     raise ValueError(f"could not find meaning of word {self}")
-    
+
     def get_meaning(self):
         if self.section:
             for s in self.section.subsections:
@@ -97,17 +97,17 @@ class Word:
     def add_node(self):
         lemma = self.lemma if self.lemma else ' '
         label = (f'<<FONT POINT-SIZE="10">{self.lang}</FONT>'
-                f'<BR ALIGN="CENTER"/>'
-                f'<B>{lemma}</B>>')
+                 f'<BR ALIGN="CENTER"/>'
+                 f'<B>{lemma}</B>>')
         if self.gloss:
             wraped = textwrap.wrap(self.gloss, 30)
             label = label[:-1] \
                 + f'<BR ALIGN="CENTER"/>' \
                 + f'<FONT POINT-SIZE="10"><I>{"<BR />".join(wraped)}</I></FONT>' \
                 + '>'
-        if self.indent==0:
+        if self.indent == 0:
             Word.g.node(
-                self.id, 
+                self.id,
                 label,
                 shape='box',
                 fontcolor='red',
@@ -116,12 +116,12 @@ class Word:
             )
         if self.section:
             Word.g.node(
-                self.id, 
+                self.id,
                 label
             )
         else:
             Word.g.node(
-                self.id, 
+                self.id,
                 label,
                 fontcolor='grey',
                 color='grey',
@@ -129,16 +129,16 @@ class Word:
             )
 
     def __getattr__(self, __name: str):
-            if __name not in self.__dict__:
-                return None
-            return self.__dict__[__name]
+        if __name not in self.__dict__:
+            return None
+        return self.__dict__[__name]
 
     def __str__(self):
         return f'{self.lemma} ({self.lang})'
-    
+
     def __repr__(self) -> str:
         return f'Word({self.lemma}, {self.lang_code})'
-        
+
     def _get_etymology(self):
         if self.section:
             for subsection in self.section.subsections:
@@ -167,16 +167,16 @@ class Word:
             #         self.make_edge_cognate(t)
 
             for t in [temp for temp in self.etymology.templates
-                if temp.type in temp.INHERITED|temp.BORROWED
-                                        |temp.AFFIX|temp.SUFFIX]:
+                      if temp.type in temp.INHERITED | temp.BORROWED
+                      | temp.AFFIX | temp.SUFFIX]:
                 if self.num_tried < 3 and self.num_valid < 1:
                     self.make_edge(t)
             for t in [temp for temp in self.etymology.templates
-                        if temp.type in temp.DERIVED]:
+                      if temp.type in temp.DERIVED]:
                 if self.num_tried < 3 and self.num_valid < 1:
                     self.make_edge_der(t)
             for t in [temp for temp in self.etymology.templates
-                        if temp.type in temp.MENTION|temp.LINK|temp.COGNATE]:
+                      if temp.type in temp.MENTION | temp.LINK | temp.COGNATE]:
                 if self.num_tried < 3 and self.num_valid < 1:
                     self.make_edge_mentions(t)
                     self.make_edge_cognate(t)
@@ -193,7 +193,7 @@ class Word:
         """
         page_title = self.lemma
         if self.lang in ['Latin', 'Old High German', 'Ancient Greek',
-                            'Old English', 'Russian']:
+                         'Old English', 'Russian']:
             page_title = (
                 self.lemma
                     .replace('ā', 'a')
@@ -211,7 +211,7 @@ class Word:
         page_title = page_title.replace('*', f'Reconstruction:{self.lang}/')
 
         return wiktionary.Page.get(page_title)
-    
+
     def make_edge(self, t: "wiktionary.Template"):
         if t:
             self.num_tried += 1
@@ -273,7 +273,7 @@ class Word:
                 if w2:
                     if w1.etymology or w2.etymology:
                         self.num_valid += 1
-    
+
     def make_edge_mentions(self, t: "wiktionary.Template"):
         if t:
             self.num_tried += 1
@@ -328,10 +328,9 @@ class Word:
                             style='dashed')
                 if w.section:
                     self.num_valid += 1
-    
+
     def update_label(self):
         pass
-
 
 
 if __name__ == '__main__':
@@ -383,7 +382,6 @@ if __name__ == '__main__':
     # Word.get('dragon', 'ro')
 
     # Word.get('dezmierda', 'ro')
-
 
     Word.get('afară', 'ro')
 
