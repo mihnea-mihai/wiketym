@@ -8,6 +8,11 @@ import re
 import textwrap
 from flask import Flask, request, render_template, send_file
 
+app = Flask(__name__)
+
+
+
+
 MEANING_POS = ['Noun', 'Verb', 'Adjective', 'Preposition']
 
 
@@ -333,7 +338,7 @@ class Word:
         pass
 
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
     # Word.get('computer', 'en')
 
     # Word.get('Lucifer', 'en')
@@ -383,7 +388,25 @@ if __name__ == '__main__':
 
     # Word.get('dezmierda', 'ro')
 
-    Word.get('afară', 'ro')
+    # Word.get('afară', 'ro')
 
-    Word.g = Word.g.unflatten(stagger=2)
-    Word.g.view()
+    # Word.g = Word.g.unflatten(stagger=2)
+    # Word.g.view()
+
+@app.route('/')
+def my_form():
+    return render_template('request.html')
+
+
+@app.route('/', methods=['POST'])
+def my_form_post():
+    lemma = request.form['lemma']
+    lang_code = request.form['lang_code']
+    Word.get(lemma, lang_code)
+    filename = f'{lemma}_{lang_code}'
+    Word.g.render(filename,format='svg')
+    return send_file(f'{filename}.svg', as_attachment=False)
+
+
+if __name__ == '__main__':
+    app.run(port=5000, debug=True)

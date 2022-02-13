@@ -1,0 +1,15 @@
+digraph "Etymology Tree" {
+	Blut_de [label=<<FONT POINT-SIZE="10">German</FONT><BR ALIGN="CENTER"/><B>Blut</B>> color=red fontcolor=red shape=box style=bold]
+	Blut_de [label=<<FONT POINT-SIZE="10">German</FONT><BR ALIGN="CENTER"/><B>Blut</B>>]
+	bluot_gmh [label=<<FONT POINT-SIZE="10">Middle High German</FONT><BR ALIGN="CENTER"/><B>bluot</B>>]
+	bluot_goh [label=<<FONT POINT-SIZE="10">Old High German</FONT><BR ALIGN="CENTER"/><B>bluot</B>>]
+	"*blōd_gmw-pro" [label=<<FONT POINT-SIZE="10">Proto-West Germanic</FONT><BR ALIGN="CENTER"/><B>*blōd</B>> color=grey fontcolor=grey style=dashed]
+	"*blōd_gmw-pro" -> bluot_goh [color=green]
+	"*blōþą_gem-pro" [label=<<FONT POINT-SIZE="10">Proto-Germanic</FONT><BR ALIGN="CENTER"/><B>*blōþą</B>>]
+	"*bʰleh₃-_ine-pro" [label=<<FONT POINT-SIZE="10">Proto-Indo-European</FONT><BR ALIGN="CENTER"/><B>*bʰleh₃-</B>>]
+	"*bʰleh₃-_ine-pro" -> "*blōþą_gem-pro"
+	"*bʰleh₃-_ine-pro" [label=<<FONT POINT-SIZE="10">Proto-Indo-European</FONT><BR ALIGN="CENTER"/><B>*bʰleh₃-</B><BR ALIGN="CENTER"/><FONT POINT-SIZE="10"><I>to bloom</I></FONT>>]
+	"*blōþą_gem-pro" -> bluot_goh [color=green]
+	bluot_goh -> bluot_gmh [color=green]
+	bluot_gmh -> Blut_de [color=green]
+}
