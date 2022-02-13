@@ -1,0 +1,20 @@
+digraph "Etymology Tree" {
+	Morgen_de [label=<<FONT POINT-SIZE="10">German</FONT><BR ALIGN="CENTER"/><B>Morgen</B>> color=red fontcolor=red shape=box style=bold]
+	Morgen_de [label=<<FONT POINT-SIZE="10">German</FONT><BR ALIGN="CENTER"/><B>Morgen</B>>]
+	morgen_gmh [label=<<FONT POINT-SIZE="10">Middle High German</FONT><BR ALIGN="CENTER"/><B>morgen</B>> color=grey fontcolor=grey style=dashed]
+	morgen_gmh -> Morgen_de [color=green]
+	morgan_goh [label=<<FONT POINT-SIZE="10">Old High German</FONT><BR ALIGN="CENTER"/><B>morgan</B>>]
+	"*morgin_gmw-pro" [label=<<FONT POINT-SIZE="10">Proto-West Germanic</FONT><BR ALIGN="CENTER"/><B>*morgin</B>>]
+	"*murginaz_gem-pro" [label=<<FONT POINT-SIZE="10">Proto-Germanic</FONT><BR ALIGN="CENTER"/><B>*murginaz</B>>]
+	"*merkʷ-_ine-pro" [label=<<FONT POINT-SIZE="10">Proto-Indo-European</FONT><BR ALIGN="CENTER"/><B>*merkʷ-</B>> color=grey fontcolor=grey style=dashed]
+	"*merkʷ-_ine-pro" -> "*murginaz_gem-pro"
+	"*merkʷ-_ine-pro" [label=<<FONT POINT-SIZE="10">Proto-Indo-European</FONT><BR ALIGN="CENTER"/><B>*merkʷ-</B><BR ALIGN="CENTER"/><FONT POINT-SIZE="10"><I>to flicker, twinkle, darken</I></FONT>> color=grey fontcolor=grey style=dashed]
+	"*mer-_ine-pro" [label=<<FONT POINT-SIZE="10">Proto-Indo-European</FONT><BR ALIGN="CENTER"/><B>*mer-</B>>]
+	"*mer-_ine-pro" -> "*murginaz_gem-pro"
+	"*mer-_ine-pro" [label=<<FONT POINT-SIZE="10">Proto-Indo-European</FONT><BR ALIGN="CENTER"/><B>*mer-</B><BR ALIGN="CENTER"/><FONT POINT-SIZE="10"><I>to flicker, twinkle</I></FONT>>]
+	"mérkti_lt" [label=<<FONT POINT-SIZE="10">Lithuanian</FONT><BR ALIGN="CENTER"/><B>mérkti</B>> color=grey fontcolor=grey style=dashed]
+	"mérkti_lt" -> "*murginaz_gem-pro" [arrowhead=none color=orange style=dashed]
+	"*murginaz_gem-pro" -> "*morgin_gmw-pro" [color=green]
+	"*morgin_gmw-pro" -> morgan_goh [color=green]
+	morgan_goh -> Morgen_de [color=green]
+}

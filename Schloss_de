@@ -1,0 +1,27 @@
+digraph "Etymology Tree" {
+	Schloss_de [label=<<FONT POINT-SIZE="10">German</FONT><BR ALIGN="CENTER"/><B>Schloss</B>> color=red fontcolor=red shape=box style=bold]
+	Schloss_de [label=<<FONT POINT-SIZE="10">German</FONT><BR ALIGN="CENTER"/><B>Schloss</B>>]
+	"slōz_gmh" [label=<<FONT POINT-SIZE="10">Middle High German</FONT><BR ALIGN="CENTER"/><B>slōz</B>> color=grey fontcolor=grey style=dashed]
+	"slōz_gmh" -> Schloss_de [color=green]
+	sloz_goh [label=<<FONT POINT-SIZE="10">Old High German</FONT><BR ALIGN="CENTER"/><B>sloz</B>> color=grey fontcolor=grey style=dashed]
+	sloz_goh -> Schloss_de [color=green]
+	"schließen_de" [label=<<FONT POINT-SIZE="10">German</FONT><BR ALIGN="CENTER"/><B>schließen</B>>]
+	"slieȥen_gmh" [label=<<FONT POINT-SIZE="10">Middle High German</FONT><BR ALIGN="CENTER"/><B>slieȥen</B>> color=grey fontcolor=grey style=dashed]
+	"slieȥen_gmh" -> "schließen_de" [color=green]
+	sliozan_goh [label=<<FONT POINT-SIZE="10">Old High German</FONT><BR ALIGN="CENTER"/><B>sliozan</B>> color=grey fontcolor=grey style=dashed]
+	sliozan_goh -> "schließen_de" [color=green]
+	"*sleutan_gmw-pro" [label=<<FONT POINT-SIZE="10">Proto-West Germanic</FONT><BR ALIGN="CENTER"/><B>*sleutan</B>>]
+	"*sleutaną_gem-pro" [label=<<FONT POINT-SIZE="10">Proto-Germanic</FONT><BR ALIGN="CENTER"/><B>*sleutaną</B>>]
+	"*(s)klewd-_ine-pro" [label=<<FONT POINT-SIZE="10">Proto-Indo-European</FONT><BR ALIGN="CENTER"/><B>*(s)klewd-</B>> color=grey fontcolor=grey style=dashed]
+	"*(s)klewd-_ine-pro" -> "*sleutaną_gem-pro"
+	"*(s)klewd-_ine-pro" [label=<<FONT POINT-SIZE="10">Proto-Indo-European</FONT><BR ALIGN="CENTER"/><B>*(s)klewd-</B><BR ALIGN="CENTER"/><FONT POINT-SIZE="10"><I>to lock</I></FONT>> color=grey fontcolor=grey style=dashed]
+	"*(s)kleh₂w-_ine-pro" [label=<<FONT POINT-SIZE="10">Proto-Indo-European</FONT><BR ALIGN="CENTER"/><B>*(s)kleh₂w-</B>>]
+	"*(s)kleh₂w-_ine-pro" -> "*sleutaną_gem-pro"
+	"*(s)kleh₂w-_ine-pro" [label=<<FONT POINT-SIZE="10">Proto-Indo-European</FONT><BR ALIGN="CENTER"/><B>*(s)kleh₂w-</B><BR ALIGN="CENTER"/><FONT POINT-SIZE="10"><I>nail, hook, pin, key</I></FONT>>]
+	"*(s)kel-_ine-pro" [label=<<FONT POINT-SIZE="10">Proto-Indo-European</FONT><BR ALIGN="CENTER"/><B>*(s)kel-</B>>]
+	"*(s)kel-_ine-pro" -> "*sleutaną_gem-pro"
+	"*(s)kel-_ine-pro" [label=<<FONT POINT-SIZE="10">Proto-Indo-European</FONT><BR ALIGN="CENTER"/><B>*(s)kel-</B><BR ALIGN="CENTER"/><FONT POINT-SIZE="10"><I>to crook, bend</I></FONT>>]
+	"*sleutaną_gem-pro" -> "*sleutan_gmw-pro" [color=green]
+	"*sleutan_gmw-pro" -> "schließen_de" [color=green]
+	"schließen_de" -> Schloss_de [arrowhead=none color=grey style=dashed]
+}
