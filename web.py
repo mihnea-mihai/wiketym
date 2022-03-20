@@ -1,7 +1,7 @@
 from crypt import methods
 from flask import Flask, request, render_template, send_file
 from word import Word
-import pygraphviz as pgv
+import networkx as nx
 
 app = Flask(__name__)
 
@@ -19,10 +19,11 @@ def my_form_post():
     lang_code = request.form['lang_code']
     Word.get(lemma, lang_code)
     filename = f'{lemma}_{lang_code}.pdf'
-    Word.g.draw(filename, prog='dot')
-    Word.g = pgv.AGraph(directed=True)
+    nx.nx_pydot.to_pydot(Word.g).write_pdf(filename)
+
+    Word.g = nx.DiGraph()
     Word._words = {}
-    return send_file(f'{filename}', as_attachment=False)
+    return send_file(filename, as_attachment=False)
 
 
 if __name__ == '__main__':
