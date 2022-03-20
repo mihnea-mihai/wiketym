@@ -1,17 +1,13 @@
 from __future__ import annotations
-
 import json
 import re
 import textwrap
 
-from pathlib import Path
-
 import networkx as nx
-import pygraphviz as pgv
 
 
 from wiktionary.language import Language
-from wiktionary.page import Page, Section
+from wiktionary.page import Page
 from wiktionary.template import Template
 
 
@@ -20,7 +16,7 @@ class Word:
     with open('strip.json') as file:
         strip_dict =  json.load(file)
 
-    g = pgv.AGraph(directed=True)
+    g = nx.DiGraph()
     _indent = 0
     _words: dict[str, Word] = {}
 
@@ -323,8 +319,4 @@ class Word:
 
 if __name__ == '__main__':
     Word.get('language', 'en')
-    Word.g.draw('test.pdf', prog='dot')
-    nxg = nx.MultiDiGraph(Word.g)
-    for node in nxg:
-        print(node)
-
+    nx.nx_pydot.to_pydot(Word.g).write_svg('test.svg')
