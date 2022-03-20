@@ -1,2 +1,6 @@
-/graphs
-test.in
+.venv
+__pycache__/
+.pytest_cache/
+.vscode/
+old/
+test.*

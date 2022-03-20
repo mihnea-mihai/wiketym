@@ -1,4 +1,0 @@
-class Test:
-    pass
-
-Test()
