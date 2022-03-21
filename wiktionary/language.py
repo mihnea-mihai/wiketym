@@ -75,8 +75,10 @@ class Language:
                             'pro': langs[copy_code]['pro']
                         }
                     else:
-                        langs[code.text] = {'name': name, 'diacr': False,
-                            'page_name': page_name, 'pro': False}
+                        langs[code.text] = {
+                            'name': name, 'diacr': False,
+                            'page_name': page_name, 'pro': False
+                        }
 
         res = requests.get(f'{url}/Wiktionary:List_of_families').text
         soup = BeautifulSoup(res, features='html.parser')
@@ -87,8 +89,10 @@ class Language:
                 code = tds[0].select_one('code').text
                 name = tds[1].select_one('a').text
                 page_name = name
-                langs[code] = {'name': name, 'diacr': None,
-                    'page_name': page_name, 'pro': None}
+                langs[code] = {
+                    'name': name, 'diacr': None,
+                    'page_name': page_name, 'pro': None
+                }
 
         with open('langs.json', 'w') as file:
             json.dump(langs, file)

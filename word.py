@@ -52,8 +52,10 @@ class Word:
             if self.lang.diacr:
                 page_title = self.strip(page_title)
 
-            page_title = page_title.replace('*',
-                f'Reconstruction:{self.lang.page_name}/')
+            page_title = page_title.replace(
+                '*',
+                f'Reconstruction:{self.lang.page_name}/'
+            )
 
             return Page.get(page_title)
 
