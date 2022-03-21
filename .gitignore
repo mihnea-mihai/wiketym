@@ -5,3 +5,5 @@ old/
 test.*
 sandbox.py
 wiketym-dev/
+wiketym-qa/
+wiketym/
