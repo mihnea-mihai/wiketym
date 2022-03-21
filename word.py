@@ -1,133 +1,108 @@
-import doctest
-from tkinter.ttk import Style
-import wiktionary
+from __future__ import annotations
 import json
-import graphviz
-from pprint import pprint
 import re
 import textwrap
-from flask import Flask, request, render_template, send_file
 
-app = Flask(__name__)
-
+import networkx as nx
 
 
-
-MEANING_POS = ['Noun', 'Verb', 'Adjective', 'Preposition']
+from wiktionary.language import Language
+from wiktionary.page import Page
+from wiktionary.template import Template
 
 
 class Word:
-    """
-    >>> w = Word.get('natural', 'en')
-    >>> w.etymology.wikitext
-    >>> for t in w.etymology.templates:
-    ...     t.type, t.gloss
 
-    >>> w.make_edge_mentions(w.etymology.templates[6])
-    >>> w._words
+    with open('strip.json') as file:
+        strip_dict =  json.load(file)
 
-    """
-    with open('langs.json') as file:
-        langs: "dict[str, str]" = json.load(file)
-
-    _words: "dict[str, Word]" = {}
-    g = graphviz.Digraph('Etymology Tree', filename='etym', format='svg')
+    g = nx.DiGraph()
     _indent = 0
+    _words: dict[str, Word] = {}
 
-    @classmethod
-    def get(cls, lemma: str, lang_code: str) -> "Word":
-        if lang_code in ['LL.', 'ML.', 'VL.']:
-            lang_code = 'la'
-        lemma = cls.strip(lemma, lang_code)
+    @staticmethod
+    def get(lemma: str, lang_code: str) -> Word:
+        if not lemma:
+            lemma = ''
+        lang = Language.get(lang_code)
+        if lang.diacr:
+            lemma = Word.strip(lemma)
         id = lemma + '_' + lang_code
-        if id not in cls._words:
+        if id not in Word._words:
             # Create and add to stack if not already
-            cls._words[id] = Word(lemma, lang_code)
+            Word._words[id] = Word(lemma, lang_code)
             # Add ascendants recursively only after adding to stack
-            cls._words[id].add_ascendants()
+            Word._words[id].add_ascendants()
         # Return from stack anyway
-        return cls._words[id]
+        return Word._words[id]
 
     @classmethod
-    def strip(cls, lemma, lang_code):
-        if cls.langs[lang_code] in ['Latin', 'Old High German',
-                                    'Ancient Greek', 'Old English']:
-            return (
-                lemma
-                .replace('ā', 'a')
-                .replace('ē', 'e')
-                .replace('ī', 'i')
-                .replace('ō', 'o')
-                .replace('ū', 'u')
-                .replace('î', 'i')
-                .replace('ᾱ́', 'ά')
-                .replace('ċ', 'c')
-            )
+    def strip(cls, lemma):
+        for init_c in cls.strip_dict:
+            lemma = lemma.replace(init_c, cls.strip_dict[init_c])
         return lemma
 
-    def __init__(self, lemma: str, lang_code):
+    def __init__(self, lemma: str, lang: Language, focus=False,
+                    alt=None, gloss=None):
+        
+        def _get_page() -> Page:
+
+            page_title = self.lemma
+
+            if self.lang.diacr:
+                page_title = self.strip(page_title)
+
+            page_title = page_title.replace('*',
+                f'Reconstruction:{self.lang.page_name}/')
+
+            return Page.get(page_title)
+
+        if type(lang) == str:
+            lang = Language(lang)
         self.indent = Word._indent
-        self.gloss = None
-        self.id = lemma + '_' + lang_code
+        self.gloss = gloss
+        self.id = lemma + '_' + lang.code
         self.lemma = lemma
-        self.lang_code = lang_code
-        try:
-            self.lang = self.langs[self.lang_code]  # ok to throw error
-        except KeyError:
-            raise KeyError(f'Language code {self.lang_code} not found!')
-        print('\t' * Word._indent, self)
-        self.page = self._get_page()
-        self.section = self.page.get_main_section(self.lang)
-        self.meaning = self.get_meaning()
+        self.alt = alt if alt else lemma
+        self.focus = focus
+        self.lang = lang
+        self.page = _get_page()
+        self.section = self.page.get_lang_section(self.lang.page_name)
         self.add_node()
+        print(self)
         self.etymology = self._get_etymology()
-        # self.add_ascendants() NO WAY, added in get
-        # self.ascendants = self._get_ascendants()
-        # self.descendants = []
-        # if self.section and not self.meaning:
-        #     raise ValueError(f"could not find meaning of word {self}")
 
-    def get_meaning(self):
-        if self.section:
-            for s in self.section.subsections:
-                if s.line in MEANING_POS:
-                    return s
+    def __bool__(self) -> bool:
+        return bool(self.section)
 
-    def extract_gloss(self):
-        if self.meaning and not self.gloss:
-            s = re.search(r'#.*?\[\[(?P<gloss>.*?)\]\]', self.meaning.wikitext)
-            if s:
-                self.gloss = s['gloss']
 
     def add_node(self):
-        lemma = self.lemma if self.lemma else ' '
-        label = (f'<<FONT POINT-SIZE="10">{self.lang}</FONT>'
+        alt = self.alt if self.alt else ' '
+        label = (f'<<FONT POINT-SIZE="10">{self.lang.name}</FONT>'
                  f'<BR ALIGN="CENTER"/>'
-                 f'<B>{lemma}</B>>')
+                 f'<B>{alt}</B>>')
         if self.gloss:
             wraped = textwrap.wrap(self.gloss, 30)
-            label = label[:-1] \
-                + f'<BR ALIGN="CENTER"/>' \
-                + f'<FONT POINT-SIZE="10"><I>{"<BR />".join(wraped)}</I></FONT>' \
-                + '>'
-        if self.indent == 0:
-            Word.g.node(
+            label[-1:] = f'<BR ALIGN="CENTER"/>' \
+                f'<FONT POINT-SIZE="10"><I>{"<BR />".join(wraped)}</I></FONT>>'
+        if self.focus:
+            Word.g.add_node(
                 self.id,
-                label,
+                label=label,
                 shape='box',
                 fontcolor='red',
                 color='red',
                 style='bold'
             )
-        if self.section:
-            Word.g.node(
+        elif self.section:
+            Word.g.add_node(
                 self.id,
-                label
+                label=label
             )
         else:
-            Word.g.node(
+            Word.g.add_node(
                 self.id,
-                label,
+                label=label,
                 fontcolor='grey',
                 color='grey',
                 style='dashed'
@@ -151,73 +126,75 @@ class Word:
                     return subsection
 
     def add_ascendants(self):
+        def title_to_lemma(title: str):
+            if '/' in title:
+                return '*' + title.split('/', maxsplit=1)[1]
+            return title
 
-        Word._indent += 1
-        self.num_tried = 0
-        self.num_valid = 0
+        m = re.match(r'#REDIRECT \[\[(?P<page>.+)\]\]', self.page.wikitext)
+        if m:
+            w = Word.get(title_to_lemma(m['page']), self.lang.code)
+            print('redirected from', self, 'to', w)
+            Word.g.add_edge(w.id, self.id, label='redirect')
+
         if self.etymology:
-            # for t in [temp for temp in self.etymology.templates
-            #             if temp.type in temp.INHERITED|temp.BORROWED
-            #                             |temp.AFFIX|temp.SUFFIX]:
-            #     if self.num_tried < 3 and self.num_valid < 1:
-            #         self.make_edge(t)
-            # for t in [temp for temp in self.etymology.templates
-            #             if temp.type in temp.DERIVED]:
-            #     if self.num_tried < 3 and self.num_valid < 1:
-            #         self.make_edge_der(t)
-            # for t in [temp for temp in self.etymology.templates
-            #             if temp.type in temp.MENTION|temp.LINK|temp.COGNATE]:
-            #     if self.num_tried < 3 and self.num_valid < 1:
-            #         self.make_edge_mentions(t)
-            #         self.make_edge_cognate(t)
+            for t in self.etymology.templates:
+                if (t.type in t.INHERITED | t.MENTION | t.DERIVED
+                    | t.BORROWED | t.LINK):
+                    w = Word.get(t.terms[0].lemma, t.terms[0].lang_code)
+                    self.g.add_edge(w.id, self.id, label=t.type)
+                    if w:
+                        break
+                if t.type in t.SUFFIX:
+                    root = Word.get(t.terms[0].lemma, t.terms[0].lang_code)
+                    suf_lemma = t.terms[1].lemma
+                    if '-' not in suf_lemma:
+                        if suf_lemma.startswith('*'):
+                            suf_lemma = '*-' + suf_lemma[1:]
+                        else:
+                            suf_lemma = '-' + suf_lemma
+                    suf = Word.get(suf_lemma, t.terms[1].lang_code)
+                    Word.g.add_edge(root.id, self.id, label='root')
+                    Word.g.add_edge(suf.id, self.id, label='suffix')
 
-            for t in [temp for temp in self.etymology.templates
-                      if temp.type in temp.INHERITED | temp.BORROWED
-                      | temp.AFFIX | temp.SUFFIX]:
-                if self.num_tried < 3 and self.num_valid < 1:
-                    self.make_edge(t)
-            for t in [temp for temp in self.etymology.templates
-                      if temp.type in temp.DERIVED]:
-                if self.num_tried < 3 and self.num_valid < 1:
-                    self.make_edge_der(t)
-            for t in [temp for temp in self.etymology.templates
-                      if temp.type in temp.MENTION | temp.LINK | temp.COGNATE]:
-                if self.num_tried < 3 and self.num_valid < 1:
-                    self.make_edge_mentions(t)
-                    self.make_edge_cognate(t)
-        Word._indent -= 1
+        # Word._indent += 1
+        # self.num_tried = 0
+        # self.num_valid = 0
+        # if self.etymology:
+        #     # for t in [temp for temp in self.etymology.templates
+        #     #             if temp.type in temp.INHERITED|temp.BORROWED
+        #     #                             |temp.AFFIX|temp.SUFFIX]:
+        #     #     if self.num_tried < 3 and self.num_valid < 1:
+        #     #         self.make_edge(t)
+        #     # for t in [temp for temp in self.etymology.templates
+        #     #             if temp.type in temp.DERIVED]:
+        #     #     if self.num_tried < 3 and self.num_valid < 1:
+        #     #         self.make_edge_der(t)
+        #     # for t in [temp for temp in self.etymology.templates
+        #     #             if temp.type in temp.MENTION|temp.LINK|temp.COGNATE]:
+        #     #     if self.num_tried < 3 and self.num_valid < 1:
+        #     #         self.make_edge_mentions(t)
+        #     #         self.make_edge_cognate(t)
 
-    def _get_page(self) -> "wiktionary.Page":
-        """
-        >>> Word('mēnsa', 'la').page.title
-        'mensa'
-        >>> Word('*watar', 'gmw-pro').page.title
-        'Reconstruction:Proto-West Germanic/watar'
-        >>> Word('*linguāticum', 'VL.').page.title
-        'Reconstruction:Latin/linguaticum'
-        """
-        page_title = self.lemma
-        if self.lang in ['Latin', 'Old High German', 'Ancient Greek',
-                         'Old English', 'Russian']:
-            page_title = (
-                self.lemma
-                    .replace('ā', 'a')
-                    .replace('ē', 'e')
-                    .replace('ī', 'i')
-                    .replace('ō', 'o')
-                    .replace('ū', 'u')
-                    .replace('î', 'i')
-                    .replace('ᾱ́', 'ά')
-                    .replace('ċ', 'c')
-                    .replace('о́', 'о')
-                    .replace('а́', 'а')
-                    .replace('ġ', 'g')
-            )
-        page_title = page_title.replace('*', f'Reconstruction:{self.lang}/')
+        #     for t in [temp for temp in self.etymology.templates
+        #               if temp.type in temp.INHERITED | temp.BORROWED
+        #               | temp.AFFIX | temp.SUFFIX]:
+        #         if self.num_tried < 3 and self.num_valid < 1:
+        #             self.make_edge(t)
+        #     for t in [temp for temp in self.etymology.templates
+        #               if temp.type in temp.DERIVED]:
+        #         if self.num_tried < 3 and self.num_valid < 1:
+        #             self.make_edge_der(t)
+        #     for t in [temp for temp in self.etymology.templates
+        #               if temp.type in temp.MENTION | temp.LINK | temp.COGNATE]:
+        #         if self.num_tried < 3 and self.num_valid < 1:
+        #             self.make_edge_mentions(t)
+        #             self.make_edge_cognate(t)
+        # Word._indent -= 1
 
-        return wiktionary.Page.get(page_title)
 
-    def make_edge(self, t: "wiktionary.Template"):
+
+    def make_edge(self, t: Template):
         if t:
             self.num_tried += 1
             if t.type in t.INHERITED:
@@ -279,7 +256,7 @@ class Word:
                     if w1.etymology or w2.etymology:
                         self.num_valid += 1
 
-    def make_edge_mentions(self, t: "wiktionary.Template"):
+    def make_edge_mentions(self, t: Template):
         if t:
             self.num_tried += 1
             if (t.type in t.MENTION
@@ -302,7 +279,7 @@ class Word:
                             w2 = Word.get(m['true'], t.lang)
                             Word.g.edge(w2.id, w.id, color='blue')
 
-    def make_edge_der(self, t: "wiktionary.Template"):
+    def make_edge_der(self, t: Template):
         if t:
             self.num_tried += 1
             if t.type in t.DERIVED:
@@ -338,75 +315,8 @@ class Word:
         pass
 
 
-# if __name__ == '__main__':
-    # Word.get('computer', 'en')
-
-    # Word.get('Lucifer', 'en')
-    # Word.get('Lucian', 'en')
-
-    # Word.get('graphic', 'en')
-    # Word.get('carve', 'en')
-
-    # Word.get('gyno-', 'en')
-    # Word.get('queen', 'en')
-    # Word.get('banshee', 'en')
-
-    # Word.get('pământ', 'ro')
-
-    # Word.get('undă', 'ro')
-    # Word.get('water', 'en')
-    # Word.get('winter', 'en')
-    # Word.get('whiskey', 'en')
-    # Word.get('hydro-', 'en')
-    # Word.get('clepsidră', 'ro')
-
-    # Word.get('heart', 'en')
-    # Word.get('core', 'en')
-    # Word.get('crede', 'ro')
-    # Word.get('cord', 'ro')
-
-    # Word.get('wise', 'en')
-    # Word.get('wissen', 'de')
-    # Word.get('wit', 'en')
-    # Word.get('envy', 'en')
-    # Word.get('history', 'en')
-
-    # Word.get('verb', 'en')
-    # Word.get('word', 'en')
-
-    # Word.get('skirt', 'en')
-    # Word.get('shirt', 'en')
-    # Word.get('short', 'en')
-    # Word.get('șorț', 'ro')
-    # Word.get('scurt', 'ro')
-
-    # Word.get('fior', 'ro')
-    # Word.get('febră', 'ro')
-
-    # Word.get('drac', 'ro')
-    # Word.get('dragon', 'ro')
-
-    # Word.get('dezmierda', 'ro')
-
-    # Word.get('afară', 'ro')
-
-    # Word.g = Word.g.unflatten(stagger=2)
-    # Word.g.view()
-
-@app.route('/')
-def my_form():
-    return render_template('request.html')
-
-
-@app.route('/', methods=['POST'])
-def my_form_post():
-    lemma = request.form['lemma']
-    lang_code = request.form['lang_code']
-    Word.get(lemma, lang_code)
-    filename = f'{lemma}_{lang_code}'
-    Word.g.render(filename,format='svg')
-    return send_file(f'{filename}.svg', as_attachment=False)
 
 
 if __name__ == '__main__':
-    app.run(port=5000, debug=True)
+    Word.get('language', 'en')
+    nx.nx_pydot.to_pydot(Word.g).write_svg('test.svg')

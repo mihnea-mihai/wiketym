@@ -1,2 +1,9 @@
-/graphs
-test.in
+__pycache__/
+.pytest_cache/
+.vscode/
+old/
+test.*
+sandbox.py
+wiketym-dev/
+wiketym-qa/
+wiketym/
