@@ -5,6 +5,7 @@ from wiktionary.template import Template
 import requests
 import re
 
+
 class Page:
     """
     Interface to a Wiktionary Page.
@@ -31,7 +32,7 @@ class Page:
             Return API response either from cache or from actual API call.
             """
             url = 'https://en.wiktionary.org/w/api.php'
-            
+
             if self.title not in self._cache:
                 params = {
                     'action': 'parse',
@@ -63,7 +64,7 @@ class Page:
             )
         ]
 
-    def get_lang_section(self, lang_name: str) -> Section|None:
+    def get_lang_section(self, lang_name: str) -> Section | None:
         """
         Fetch the specified language section of the page.
         If missing, return `None`.
@@ -79,10 +80,11 @@ class Page:
         """
         return f'Page({self.title})'
 
+
 class Section:
     """
     Interface for the section of a specific page.
-    """  
+    """
 
     def __init__(self, page: Page, obj, wikitext: str) -> None:
         self.page = page
@@ -113,7 +115,7 @@ class Section:
     @cached_property
     def templates(self) -> list[Template]:
         return [Template(text)
-            for text in Template.extract_all_raw(self.wikitext)]
+                for text in Template.extract_all_raw(self.wikitext)]
 
     def get_subsection(self, subsection_line):
         for subsection in self.subsections:
@@ -121,5 +123,4 @@ class Section:
                 return subsection
 
     def __repr__(self) -> str:
-            return f'Page({self.page.title}).Section({self.line})'
-
+        return f'Page({self.page.title}).Section({self.line})'

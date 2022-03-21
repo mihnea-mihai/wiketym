@@ -1,4 +1,3 @@
-from crypt import methods
 from flask import Flask, request, render_template, send_file
 from word import Word
 import networkx as nx
@@ -9,9 +8,11 @@ app = Flask(__name__)
 # def hello_world():
 #     return "<p>Hello, World!</p>"
 
+
 @app.route('/')
 def my_form():
     return render_template('request.html')
+
 
 @app.route('/', methods=['POST'])
 def my_form_post():

@@ -3,6 +3,7 @@ import json
 from functools import cache
 import requests
 
+
 class Language:
     with open('langs.json') as file:
         _langs: dict = json.load(file)
@@ -13,7 +14,7 @@ class Language:
         self.diacr = self._langs[code]['diacr']
         self.pro = self._langs[code]['pro']
         self.code = code
-    
+
     def __str__(self) -> str:
         return self.name
 
@@ -26,7 +27,7 @@ class Language:
     def build():
         url = 'https://en.wiktionary.org/wiki'
         langs = {}
-        
+
         res = requests.get(f'{url}/Wiktionary:List_of_languages').text
         soup = BeautifulSoup(res, features='html.parser')
         trows = soup.select('table tbody tr')
@@ -37,7 +38,7 @@ class Language:
                 name = tds[1].select_one('a').text
                 diacr = tds[6].text.strip() == 'Yes'
                 langs[code] = {'name': name, 'diacr': diacr,
-                    'page_name': name, 'pro': False}
+                               'page_name': name, 'pro': False}
 
         res = requests.get(f'{url}/Wiktionary:List_of_languages/special').text
         soup = BeautifulSoup(res, features='html.parser')
@@ -50,7 +51,7 @@ class Language:
                 name = tds[1].select_one('a').text
                 diacr = tds[6].text.strip() == 'Yes'
                 langs[code] = {'name': name, 'diacr': diacr,
-                    'page_name': name, 'pro': True}
+                               'page_name': name, 'pro': True}
         table = soup.select('table')[-1]
         trows = table.select('tbody>tr')
         for tr in trows:
