@@ -2,7 +2,7 @@ from flask import Flask, request, render_template, send_file
 from word import Word
 import networkx as nx
 from werkzeug.utils import secure_filename
-
+from wiktionary.language import Language
 
 app = Flask(__name__)
 
@@ -13,7 +13,12 @@ app = Flask(__name__)
 
 @app.route('/')
 def my_form():
-    return render_template('request.html')
+    return render_template(
+        'request.html',
+        languages=[
+            {'code': lang_code, 'name': lang_object['name']}
+            for lang_code, lang_object in Language._langs.items()
+        ])
 
 
 @app.route('/', methods=['POST'])
