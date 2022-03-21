@@ -14,7 +14,7 @@ from wiktionary.template import Template
 class Word:
 
     with open('strip.json') as file:
-        strip_dict =  json.load(file)
+        strip_dict = json.load(file)
 
     g = nx.DiGraph()
     _indent = 0
@@ -43,8 +43,8 @@ class Word:
         return lemma
 
     def __init__(self, lemma: str, lang: Language, focus=False,
-                    alt=None, gloss=None):
-        
+                 alt=None, gloss=None):
+
         def _get_page() -> Page:
 
             page_title = self.lemma
@@ -52,8 +52,10 @@ class Word:
             if self.lang.diacr:
                 page_title = self.strip(page_title)
 
-            page_title = page_title.replace('*',
-                f'Reconstruction:{self.lang.page_name}/')
+            page_title = page_title.replace(
+                '*',
+                f'Reconstruction:{self.lang.page_name}/'
+            )
 
             return Page.get(page_title)
 
@@ -74,7 +76,6 @@ class Word:
 
     def __bool__(self) -> bool:
         return bool(self.section)
-
 
     def add_node(self):
         alt = self.alt if self.alt else ' '
@@ -140,7 +141,7 @@ class Word:
         if self.etymology:
             for t in self.etymology.templates:
                 if (t.type in t.INHERITED | t.MENTION | t.DERIVED
-                    | t.BORROWED | t.LINK):
+                        | t.BORROWED | t.LINK):
                     w = Word.get(t.terms[0].lemma, t.terms[0].lang_code)
                     self.g.add_edge(w.id, self.id, label=t.type)
                     if w:
@@ -171,7 +172,7 @@ class Word:
         #     #     if self.num_tried < 3 and self.num_valid < 1:
         #     #         self.make_edge_der(t)
         #     # for t in [temp for temp in self.etymology.templates
-        #     #             if temp.type in temp.MENTION|temp.LINK|temp.COGNATE]:
+#     #             if temp.type in temp.MENTION|temp.LINK|temp.COGNATE]:
         #     #     if self.num_tried < 3 and self.num_valid < 1:
         #     #         self.make_edge_mentions(t)
         #     #         self.make_edge_cognate(t)
@@ -186,13 +187,11 @@ class Word:
         #         if self.num_tried < 3 and self.num_valid < 1:
         #             self.make_edge_der(t)
         #     for t in [temp for temp in self.etymology.templates
-        #               if temp.type in temp.MENTION | temp.LINK | temp.COGNATE]:
+#               if temp.type in temp.MENTION | temp.LINK | temp.COGNATE]:
         #         if self.num_tried < 3 and self.num_valid < 1:
         #             self.make_edge_mentions(t)
         #             self.make_edge_cognate(t)
         # Word._indent -= 1
-
-
 
     def make_edge(self, t: Template):
         if t:
@@ -313,8 +312,6 @@ class Word:
 
     def update_label(self):
         pass
-
-
 
 
 if __name__ == '__main__':

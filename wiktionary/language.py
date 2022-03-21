@@ -1,10 +1,20 @@
-from bs4 import BeautifulSoup
+"""
+Interface to a language in Wiktionary.
+"""
+
+
 import json
 from functools import cache
+
 import requests
+from bs4 import BeautifulSoup
+
 
 class Language:
-    with open('langs.json') as file:
+    """
+    language int
+    """
+    with open('langs.json', encoding='utf-8') as file:
         _langs: dict = json.load(file)
 
     def __init__(self, code) -> None:
@@ -13,20 +23,27 @@ class Language:
         self.diacr = self._langs[code]['diacr']
         self.pro = self._langs[code]['pro']
         self.code = code
-    
+
     def __str__(self) -> str:
         return self.name
 
     @cache
     @staticmethod
     def get(code):
+        """
+        Get unique Language
+        """
         return Language(code)
 
     @staticmethod
     def build():
+        """
+        Generate the json of languages from
+        Wiktionary pages.
+        """
         url = 'https://en.wiktionary.org/wiki'
         langs = {}
-        
+
         res = requests.get(f'{url}/Wiktionary:List_of_languages').text
         soup = BeautifulSoup(res, features='html.parser')
         trows = soup.select('table tbody tr')
@@ -37,7 +54,7 @@ class Language:
                 name = tds[1].select_one('a').text
                 diacr = tds[6].text.strip() == 'Yes'
                 langs[code] = {'name': name, 'diacr': diacr,
-                    'page_name': name, 'pro': False}
+                               'page_name': name, 'pro': False}
 
         res = requests.get(f'{url}/Wiktionary:List_of_languages/special').text
         soup = BeautifulSoup(res, features='html.parser')
@@ -50,7 +67,7 @@ class Language:
                 name = tds[1].select_one('a').text
                 diacr = tds[6].text.strip() == 'Yes'
                 langs[code] = {'name': name, 'diacr': diacr,
-                    'page_name': name, 'pro': True}
+                               'page_name': name, 'pro': True}
         table = soup.select('table')[-1]
         trows = table.select('tbody>tr')
         for tr in trows:
@@ -74,8 +91,10 @@ class Language:
                             'pro': langs[copy_code]['pro']
                         }
                     else:
-                        langs[code.text] = {'name': name, 'diacr': False,
-                            'page_name': page_name, 'pro': False}
+                        langs[code.text] = {
+                            'name': name, 'diacr': False,
+                            'page_name': page_name, 'pro': False
+                        }
 
         res = requests.get(f'{url}/Wiktionary:List_of_families').text
         soup = BeautifulSoup(res, features='html.parser')
@@ -86,8 +105,10 @@ class Language:
                 code = tds[0].select_one('code').text
                 name = tds[1].select_one('a').text
                 page_name = name
-                langs[code] = {'name': name, 'diacr': None,
-                    'page_name': page_name, 'pro': None}
+                langs[code] = {
+                    'name': name, 'diacr': None,
+                    'page_name': page_name, 'pro': None
+                }
 
-        with open('langs.json', 'w') as file:
+        with open('langs.json', 'w', encoding='utf-8') as file:
             json.dump(langs, file)
