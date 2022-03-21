@@ -1,11 +1,20 @@
-from bs4 import BeautifulSoup
+"""
+Interface to a language in Wiktionary.
+"""
+
+
 import json
 from functools import cache
+
 import requests
+from bs4 import BeautifulSoup
 
 
 class Language:
-    with open('langs.json') as file:
+    """
+    language int
+    """
+    with open('langs.json', encoding='utf-8') as file:
         _langs: dict = json.load(file)
 
     def __init__(self, code) -> None:
@@ -21,10 +30,17 @@ class Language:
     @cache
     @staticmethod
     def get(code):
+        """
+        Get unique Language
+        """
         return Language(code)
 
     @staticmethod
     def build():
+        """
+        Generate the json of languages from
+        Wiktionary pages.
+        """
         url = 'https://en.wiktionary.org/wiki'
         langs = {}
 
@@ -94,5 +110,5 @@ class Language:
                     'page_name': page_name, 'pro': None
                 }
 
-        with open('langs.json', 'w') as file:
+        with open('langs.json', 'w', encoding='utf-8') as file:
             json.dump(langs, file)
