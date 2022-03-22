@@ -316,4 +316,4 @@ class Word:
 
 if __name__ == '__main__':
     Word.get('language', 'en')
-    nx.nx_pydot.to_pydot(Word.g).write_svg('test.svg')
+    nx.nx_pydot.to_pydot(Word.g).write_pdf('test.pdf')

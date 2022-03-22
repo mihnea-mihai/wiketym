@@ -6,10 +6,6 @@ from wiktionary.language import Language
 
 app = Flask(__name__)
 
-# @app.route("/")
-# def hello_world():
-#     return "<p>Hello, World!</p>"
-
 
 @app.route('/')
 def my_form():
