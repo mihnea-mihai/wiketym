@@ -14,6 +14,7 @@ def my_form():
         languages=[
             {'code': lang_code, 'name': lang_object['name']}
             for lang_code, lang_object in Language._langs.items()
+            if len(lang_code) < 3
         ])
 
 
