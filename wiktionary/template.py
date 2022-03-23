@@ -1,17 +1,22 @@
 
 import re
 
+
 class Template:
 
     INHERITED = {'inh', 'inherited', 'inh+'}
     BORROWED = {'bor', 'borrowed', 'bor+'}
     DERIVED = {'der', 'derived', 'der+'}
-    AFFIX = {'af', 'affix', 'vrd', 'compound'} # no compound and vrd
+    AFFIX = {'af', 'affix', 'vrd', 'compound'}  # no compound and vrd
     SUFFIX = {'suf', 'suffix'}
     PREFIX = {'prefix'}
-    MENTION = {'m', 'mention', 'back-form', 'm+'} # no backform
+    MENTION = {'m', 'mention', 'back-form', 'm+'}  # no backform
     LINK = {'l', 'link'}
     COGNATE = {'cog'}
+    COMPOUND = {'com'}
+    DIRECTIONAL = INHERITED | BORROWED | DERIVED
+    MULTIPLE = AFFIX | SUFFIX | PREFIX
+    NONDIRECTIONAL = MENTION | LINK
 
     class Term:
         def __init__(self) -> None:
@@ -21,11 +26,11 @@ class Template:
             self.t = ''
             self.tr = ''
             self.id = ''
-        
+
         def __str__(self) -> str:
             show = self.alt if self.alt else self.lemma
             return f'{show} ({self.lang_code}) "{self.t}"'
-        
+
         def __repr__(self) -> str:
             return self.__str__()
 
@@ -38,19 +43,20 @@ class Template:
                 self.terms[0].lemma = lemma
                 self.terms[0].alt = alt
                 self.terms[0].t = t
-            
+
             def parse_var(lang_code, *args):
                 for arg in args:
                     t = self.Term()
                     t.lemma = arg
                     t.lang_code = lang_code
                     self.terms.append(t)
-            
+
             if self.type in self.INHERITED | self.BORROWED | self.DERIVED:
                 parse_fixed(*self.parts[2:])
             elif self.type in self.MENTION | self.LINK | self.COGNATE:
                 parse_fixed(*self.parts[1:])
-            elif self.type in self.AFFIX | self.SUFFIX | self.PREFIX:
+            elif (self.type in self.AFFIX | self.SUFFIX
+                    | self.PREFIX | self.COMPOUND):
                 parse_var(*self.parts[1:])
 
         def parse_key_params():
@@ -78,7 +84,7 @@ class Template:
 
     @staticmethod
     def extract_all_raw(text: str) -> list[str]:
-        matches =  re.findall(
+        matches = re.findall(
             r'''\{\{
                 (
                     (?:

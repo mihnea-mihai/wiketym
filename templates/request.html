@@ -1,7 +1,51 @@
-<form method="POST">
-    <label for="lemma">Lemma:</label>
-    <input name="lemma"><br>
-    <label for="lang_code">Language code:</label>
-    <input name="lang_code"><br>
-    <input type="submit" value="Generate">
-</form>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width">
+        <title>Wiketym - Generate new</title>
+    </head>
+    <body>
+        <form method="POST" target="_blank">
+            <label for="lemma">Word</label><br>
+            <input name="lemma"><br>
+            <label for="lang_code">Language</label><br>
+            <select name="lang_code">
+                {% for lang in languages %}
+                    <option value="{{lang.code}}">{{lang.name}}</option>
+                {% endfor %}
+            </select><br>
+            <input type="submit" value="Generate">
+        </form>
+        <style>
+            :root {
+                --black-background: #212121;
+                --white-text: #fafafa;
+                font-size: xx-large;
+            }
+
+            body {
+                background-color: var(--black-background);
+                color: var(--white-text);
+                text-align: center;
+            }
+            input, select {
+                margin-bottom: 2em;
+                font-size: 1em;
+                max-width: 80%;
+            }
+            input[type=submit] {
+                height: 2rem;
+                width: 6rem;
+                font-size: xx-large;
+            }
+            form {
+                padding-top: 2em;
+            }
+
+          
+
+        </style>
+    </body>
+</html>
+

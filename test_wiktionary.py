@@ -1,8 +1,10 @@
-from wiktionary.page import Page, Section
+from wiktionary.page import Page
 from wiktionary.template import Template
 from wiktionary.language import Language
 
+
 class TestPage:
+
     def test_init(self):
         p = Page('cat')
         assert p.title == 'cat'
@@ -36,6 +38,7 @@ class TestPage:
     def test_repr(self):
         assert repr(Page('cat') == "Page(cat)")
 
+
 class TestSection:
     def test_init(self):
         s = Page.get('cat').get_lang_section('English')
@@ -51,23 +54,22 @@ class TestSection:
     def test_subsections(self):
         assert (Page.get('cat')
                     .get_lang_section('English')
-                    .get_subsection('Synonyms').level == 5
-        )
+                    .get_subsection('Synonyms').level == 5)
 
     def test_templates(self):
         assert (Page.get('vâsc')
                     .get_lang_section('Romanian')
                     .get_subsection('Etymology').templates[0].parts[1]
-                    == 'ro')
+                == 'ro')
+
 
 class TestTemplate:
-
 
     def test_extract_all_raw(self):
         text = '{{content}} and {{before{{inner}}after}}'
         assert Template.extract_all_raw(text)[1] == 'before{{inner}}after'
         assert Template.extract_all_raw('normal text') == []
-    
+
     def test_fixed_params(self):
         t = Template('inh|ro|lat|canis|CANIS|dog|id=dogid|tr=cnis')
         assert t.terms[0].lemma == 'canis'
@@ -102,12 +104,13 @@ class TestTemplate:
         assert t.terms[2].lemma == 'test'
         assert t.terms[2].lang_code == 'ro'
         assert t.terms[2].t == 'tt'
-    
+
+
 class TestLanguage:
     def test_get_unique(self):
         assert Language.get('ro') is Language.get('ro')
         assert Language('ro') is not Language('ro')
-    
+
     def test_init(self):
         ro = Language('ro')
         assert ro.name == 'Romanian'
