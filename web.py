@@ -24,10 +24,16 @@ def my_form_post():
     lang_code = request.form['lang_code']
     Word.get(lemma, lang_code)
     filename = secure_filename(f'{lemma}_{lang_code}.pdf') or 'file.pdf'
-    nx.nx_pydot.to_pydot(Word.g).write_pdf(filename)
+    reduced: nx.DiGraph = nx.algorithms.transitive_reduction(Word.g)
+    reduced.add_nodes_from(Word.g.nodes(data=True))
+    reduced.add_edges_from(
+        (u, v, Word.g.edges[u, v]) for u, v in reduced.edges
+    )
+    nx.nx_pydot.to_pydot(reduced).write_pdf(filename)
 
     Word.g = nx.DiGraph()
     Word._words = {}
+
     return send_file(filename, as_attachment=False)
 
 
