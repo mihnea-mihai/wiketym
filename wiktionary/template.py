@@ -13,6 +13,10 @@ class Template:
     MENTION = {'m', 'mention', 'back-form', 'm+'}  # no backform
     LINK = {'l', 'link'}
     COGNATE = {'cog'}
+    COMPOUND = {'com'}
+    DIRECTIONAL = INHERITED | BORROWED | DERIVED
+    MULTIPLE = AFFIX | SUFFIX | PREFIX
+    NONDIRECTIONAL = MENTION | LINK
 
     class Term:
         def __init__(self) -> None:
@@ -51,7 +55,8 @@ class Template:
                 parse_fixed(*self.parts[2:])
             elif self.type in self.MENTION | self.LINK | self.COGNATE:
                 parse_fixed(*self.parts[1:])
-            elif self.type in self.AFFIX | self.SUFFIX | self.PREFIX:
+            elif (self.type in self.AFFIX | self.SUFFIX
+                    | self.PREFIX | self.COMPOUND):
                 parse_var(*self.parts[1:])
 
         def parse_key_params():

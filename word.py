@@ -2,9 +2,7 @@ from __future__ import annotations
 import json
 import re
 import textwrap
-
 import networkx as nx
-
 
 from wiktionary.language import Language
 from wiktionary.page import Page
@@ -21,26 +19,24 @@ class Word:
     _words: dict[str, Word] = {}
 
     @staticmethod
-    def get(lemma: str, lang_code: str) -> Word:
-        if not lemma:
-            lemma = ''
-        lang = Language.get(lang_code)
-        if lang.diacr:
+    def strip(lemma: str):
+        for init_c in Word.strip_dict:
+            lemma = lemma.replace(init_c, Word.strip_dict[init_c])
+        return lemma
+
+    @staticmethod
+    def get(lemma: str, lang_code: str, gloss: str = None) -> Word:
+        lemma = lemma or ''
+        if Language.get(lang_code).diacr:
             lemma = Word.strip(lemma)
         id = lemma + '_' + lang_code
         if id not in Word._words:
             # Create and add to stack if not already
-            Word._words[id] = Word(lemma, lang_code)
+            Word._words[id] = Word(lemma, lang_code, gloss=gloss)
             # Add ascendants recursively only after adding to stack
             Word._words[id].add_ascendants()
         # Return from stack anyway
         return Word._words[id]
-
-    @classmethod
-    def strip(cls, lemma):
-        for init_c in cls.strip_dict:
-            lemma = lemma.replace(init_c, cls.strip_dict[init_c])
-        return lemma
 
     def __init__(self, lemma: str, lang: Language, focus=False,
                  alt=None, gloss=None):
@@ -62,8 +58,8 @@ class Word:
         if type(lang) == str:
             lang = Language(lang)
         self.indent = Word._indent
-        self.gloss = gloss
         self.id = lemma + '_' + lang.code
+        self.gloss = gloss
         self.lemma = lemma
         self.alt = alt if alt else lemma
         self.focus = focus
@@ -84,7 +80,7 @@ class Word:
                  f'<B>{alt}</B>>')
         if self.gloss:
             wraped = textwrap.wrap(self.gloss, 30)
-            label[-1:] = f'<BR ALIGN="CENTER"/>' \
+            label = label[:-1] + f'<BR ALIGN="CENTER"/>' \
                 f'<FONT POINT-SIZE="10"><I>{"<BR />".join(wraped)}</I></FONT>>'
         if self.focus:
             Word.g.add_node(
@@ -104,8 +100,8 @@ class Word:
             Word.g.add_node(
                 self.id,
                 label=label,
-                fontcolor='grey',
-                color='grey',
+                fontcolor='gray50',
+                color='gray50',
                 style='dashed'
             )
 
@@ -137,26 +133,41 @@ class Word:
             w = Word.get(title_to_lemma(m['page']), self.lang.code)
             print('redirected from', self, 'to', w)
             Word.g.add_edge(w.id, self.id, label='redirect')
-
+        found = False
         if self.etymology:
             for t in self.etymology.templates:
-                if (t.type in t.INHERITED | t.MENTION | t.DERIVED
-                        | t.BORROWED | t.LINK):
-                    w = Word.get(t.terms[0].lemma, t.terms[0].lang_code)
+                if t.type in t.DIRECTIONAL:
+                    term = t.terms[0]
+                    w = Word.get(term.lemma, term.lang_code, term.t)
                     self.g.add_edge(w.id, self.id, label=t.type)
-                    if w:
-                        break
-                if t.type in t.SUFFIX:
-                    root = Word.get(t.terms[0].lemma, t.terms[0].lang_code)
+                    # if w:
+                    found = True
+                if t.type in t.MULTIPLE:
+                    root = Word.get(t.terms[0].lemma,
+                                    t.terms[0].lang_code,
+                                    t.terms[0].t)
+                    root.gloss = t.terms[0].t
                     suf_lemma = t.terms[1].lemma
                     if '-' not in suf_lemma:
                         if suf_lemma.startswith('*'):
                             suf_lemma = '*-' + suf_lemma[1:]
                         else:
                             suf_lemma = '-' + suf_lemma
-                    suf = Word.get(suf_lemma, t.terms[1].lang_code)
+                    suf = Word.get(suf_lemma,
+                                   t.terms[1].lang_code,
+                                   t.terms[1].t)
+                    suf.gloss = t.terms[1].t
                     Word.g.add_edge(root.id, self.id, label='root')
                     Word.g.add_edge(suf.id, self.id, label='suffix')
+                    found = True
+                if not found:
+                    if (t.type in t.NONDIRECTIONAL):
+                        w = Word.get(t.terms[0].lemma, t.terms[0].lang_code,
+                                     t.terms[0].t)
+                        self.g.add_edge(w.id, self.id, label=t.type)
+                        if not nx.algorithms.is_directed_acyclic_graph(Word.g):
+                            Word.g.remove_edge(w.id, self.id)
+                            w.gloss = t.terms[0].t
 
         # Word._indent += 1
         # self.num_tried = 0
@@ -315,5 +326,10 @@ class Word:
 
 
 if __name__ == '__main__':
-    Word.get('language', 'en')
-    nx.nx_pydot.to_pydot(Word.g).write_svg('test.svg')
+    Word.get('water', 'en')
+    reduced: nx.DiGraph = nx.algorithms.transitive_reduction(Word.g)
+    reduced.add_nodes_from(Word.g.nodes(data=True))
+    reduced.add_edges_from(
+        (u, v, Word.g.edges[u, v]) for u, v in reduced.edges
+    )
+    nx.nx_pydot.to_pydot(reduced).write_pdf('test.pdf')
