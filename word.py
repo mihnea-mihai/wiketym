@@ -140,8 +140,8 @@ class Word:
                     term = t.terms[0]
                     w = Word.get(term.lemma, term.lang_code, term.t)
                     self.g.add_edge(w.id, self.id, label=t.type)
-                    # if w:
-                    found = True
+                    if w:
+                        found = True
                 if t.type in t.MULTIPLE:
                     root = Word.get(t.terms[0].lemma,
                                     t.terms[0].lang_code,
@@ -160,7 +160,8 @@ class Word:
                     Word.g.add_edge(root.id, self.id, label='root')
                     Word.g.add_edge(suf.id, self.id, label='suffix')
                     found = True
-                if not found:
+            if not found:
+                for t in self.etymology.templates:
                     if (t.type in t.NONDIRECTIONAL):
                         w = Word.get(t.terms[0].lemma, t.terms[0].lang_code,
                                      t.terms[0].t)
@@ -168,6 +169,8 @@ class Word:
                         if not nx.algorithms.is_directed_acyclic_graph(Word.g):
                             Word.g.remove_edge(w.id, self.id)
                             w.gloss = t.terms[0].t
+                        elif w:
+                            break
 
         # Word._indent += 1
         # self.num_tried = 0
@@ -326,7 +329,7 @@ class Word:
 
 
 if __name__ == '__main__':
-    Word.get('water', 'en')
+    Word.get('pix', 'la')
     reduced: nx.DiGraph = nx.algorithms.transitive_reduction(Word.g)
     reduced.add_nodes_from(Word.g.nodes(data=True))
     reduced.add_edges_from(

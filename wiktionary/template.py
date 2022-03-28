@@ -74,7 +74,7 @@ class Template:
                             setattr(self.terms[term_i], param_key, val)
                             break
 
-        self.parts = text.replace('\n', '').split('|')
+        self.parts = text.replace('\n', '').split('|', maxsplit=4)
         self.key_parts = [part for part in self.parts if '=' in part]
         self.parts = [part for part in self.parts if '=' not in part]
         self.type = self.parts[0]
