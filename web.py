@@ -18,10 +18,10 @@ def my_form():
         ])
 
 
-@app.route('/', methods=['POST'])
+@app.route('/generate', methods=['GET'])
 def my_form_post():
-    lemma = request.form['lemma']
-    lang_code = request.form['lang_code']
+    lemma = request.args['lemma']
+    lang_code = request.args['lang_code']
     Word.get(lemma, lang_code)
     filename = secure_filename(f'{lemma}_{lang_code}.pdf') or 'file.pdf'
     reduced: nx.DiGraph = nx.algorithms.transitive_reduction(Word.g)
