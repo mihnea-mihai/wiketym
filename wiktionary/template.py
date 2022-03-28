@@ -77,7 +77,6 @@ class Template:
         text = text.replace('\n', '')
         for tmpl in re.findall(r'\{\{.*?\}\}', text):
             text = text.replace(tmpl, tmpl.replace('|', '~!~'))
-
         self.parts = [part.replace('~!~', '|') for part in text.split('|')]
         self.key_parts = [part for part in self.parts if '=' in part]
         self.parts = [part for part in self.parts if '=' not in part]
