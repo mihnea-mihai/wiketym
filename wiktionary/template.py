@@ -74,7 +74,11 @@ class Template:
                             setattr(self.terms[term_i], param_key, val)
                             break
 
-        self.parts = text.replace('\n', '').split('|', maxsplit=4)
+        text = text.replace('\n', '')
+        for tmpl in re.findall(r'\{\{.*?\}\}', text):
+            text = text.replace(tmpl, tmpl.replace('|', '~!~'))
+
+        self.parts = [part.replace('~!~', '|') for part in text.split('|')]
         self.key_parts = [part for part in self.parts if '=' in part]
         self.parts = [part for part in self.parts if '=' not in part]
         self.type = self.parts[0]
