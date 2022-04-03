@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test</title>
+  <script src="../static/script.js"></script>
+</head>
+
+<body>
+  <div id="myDropdown" class="dropdown-content">
+    <input type="text" placeholder="Search.." id="myInput" onkeyup="filter(this)" onclick="showDropdown(this)">
+    <div class="options" style="display:none">
+      <a onclick="setValue(this)">About</a>
+      <a onclick="setValue(this)">Base</a>
+      <a onclick="setValue(this)">Blog</a>
+      <a onclick="setValue(this)">Contact</a>
+      <a onclick="setValue(this)">Custom</a>
+      <a onclick="setValue(this)">Support</a>
+      <a onclick="setValue(this)">Tools</a>
+    </div>
+
+  </div>
+</body>
+
+</html>
