@@ -20,8 +20,7 @@ class TestWord:
     def test_relationships(self):
         zbura = Word.get('zbura', 'ro')
         zbura.parse_templates(Template.types.INHERITED)
-        assert Word.get('volare', 'la') \
-            in zbura.links['inherited_from']
+        assert zbura.links['inherited_from'][2].lemma == 'volare'
     
     def test_meaning(self):
         assert Word.get('voler', 'fr').meaning == 'to fly (through the air)'

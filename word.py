@@ -45,8 +45,8 @@ class Word:
     def __repr__(self) -> str:
         return f'{self.lemma} ({self.lang.name})'
 
-    def __eq__(self, __o: Word) -> bool:
-        return self.lemma == __o.lemma and self.lang_code == __o.lang_code
+    # def __eq__(self, __o: Word) -> bool:
+    #     return self.lemma == __o.lemma and self.lang_code == __o.lang_code
 
     @cache
     @staticmethod
