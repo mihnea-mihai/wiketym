@@ -45,6 +45,9 @@ class Word:
     def __repr__(self) -> str:
         return f'{self.lemma} ({self.lang.name})'
 
+    def __eq__(self, __o: Word) -> bool:
+        return self.lemma == __o.lemma and self.lang_code == __o.lang_code
+
     @cache
     @staticmethod
     def get(lemma: str, lang_code: str):
@@ -71,8 +74,8 @@ class Word:
             else:  # Special case for Greek incomplete stripping
                 title = ''.join(c for c in nkfd_form 
                     if not unicodedata.name(c) == 'COMBINING MACRON')
-        # Normalise back to ensure equality
-        title = unicodedata.normalize('NFKC', title)
+                # Normalise back to ensure equality
+                title = unicodedata.normalize('NFKC', title)
         self.lemma = title
         # Change page title for reconstructed lemmas
         title = title.replace('*',

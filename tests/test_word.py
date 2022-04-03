@@ -1,3 +1,4 @@
+from wiktionary import Template
 from word import Word
 
 class TestWord:
@@ -17,8 +18,10 @@ class TestWord:
             in Word('zbura', 'ro').section.get_subsection('Verb').wikitext
     
     def test_relationships(self):
-        assert Word.get('volāre', 'la') \
-            in Word.get('zbura', 'ro').inherited_from
+        zbura = Word.get('zbura', 'ro')
+        zbura.parse_templates(Template.types.INHERITED)
+        assert Word.get('volare', 'la') \
+            in zbura.links['inherited_from']
     
     def test_meaning(self):
         assert Word.get('voler', 'fr').meaning == 'to fly (through the air)'
