@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>wiktionary.template API documentation</title>
+<meta name="description" content="Offers support for handling Wiktionary templates." />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>wiktionary.template</code></h1>
+</header>
+<section id="section-intro">
+<p>Offers support for handling Wiktionary templates.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+Offers support for handling Wiktionary templates.
+&#34;&#34;&#34;
+from __future__ import annotations
+import re
+
+class Term:
+    &#34;&#34;&#34;
+    Representation for terms referenced in templates.
+    &#34;&#34;&#34;
+    def __init__(self, lang_code, lemma=&#39;&#39;, alt=&#39;&#39;, t=&#39;&#39;) -&gt; None:
+        self.lemma = lemma
+        &#34;Lemma of the term&#34;
+        self.lang_code = lang_code
+        &#34;Wiktionary language code&#34;
+        self.alt = alt
+        &#34;Alternative form to be displayed&#34;
+        self.t = t
+        &#34;Translation of the term&#34;
+        self.tr = &#39;&#39;
+        &#34;Transliteration of the term&#34;
+        self.id = &#39;&#39;
+        &#34;Meaning ID of the term&#34;
+
+        if re.match(r&#39;\{\{.*\}\}&#39;, lemma):  # if lemma is a template
+            self.lemma = Template(lemma).terms[0].lemma
+
+
+    def __repr__(self) -&gt; str:
+        show = self.alt if self.alt else self.lemma
+        return f&#39;{show} ({self.lang_code}) &#34;{self.t}&#34;&#39;
+
+class TemplateType():
+    &#34;&#34;&#34;
+    Static sets of template type names mappings and combinations.
+    &#34;&#34;&#34;
+    INHERITED = {&#39;inh&#39;, &#39;inherited&#39;, &#39;inh+&#39;}
+    BORROWED = {&#39;bor&#39;, &#39;borrowed&#39;, &#39;bor+&#39;}
+    DERIVED = {&#39;der&#39;, &#39;derived&#39;, &#39;der+&#39;}
+    ROOT = {&#39;root&#39;}
+    AFFIX = {&#39;af&#39;, &#39;affix&#39;, &#39;vrd&#39;, &#39;compound&#39;}  # no compound and vrd
+    SUFFIX = {&#39;suf&#39;, &#39;suffix&#39;}
+    PREFIX = {&#39;prefix&#39;}
+    MENTION = {&#39;m&#39;, &#39;mention&#39;, &#39;back-form&#39;, &#39;m+&#39;}  # no backform
+    LINK = {&#39;l&#39;, &#39;link&#39;}
+    COGNATE = {&#39;cog&#39;}
+    COMPOUND = {&#39;com&#39;}
+    W = {&#39;w&#39;}
+    DIRECTIONAL = INHERITED | BORROWED | DERIVED | ROOT
+    MULTIPLE = AFFIX | SUFFIX | PREFIX
+    NONDIRECTIONAL = MENTION | LINK
+
+
+class Template:
+    &#34;&#34;&#34;Interface for a Wiktionary template.&#34;&#34;&#34;
+
+    types = TemplateType()
+    &#34;&#34;&#34;List of possible template types.&#34;&#34;&#34;
+
+    def __init__(self, text: str) -&gt; None:
+        &#34;&#34;&#34;
+        Parse the input string as a Wiktionary template.
+        &#34;&#34;&#34;
+
+        self.terms: list[Term] = []
+        &#34;&#34;&#34;List of terms (`Term` objects) referenced in the
+        parsed template.&#34;&#34;&#34;
+        self.params: list[str] = []
+        &#34;&#34;&#34;List of parameters (as strings) of the template.
+        Positional parameters are prepended by their position.&#34;&#34;&#34;
+        self.type: str = &#39;&#39;
+        &#34;&#34;&#34;Template type, as string.&#34;&#34;&#34;
+
+        raw = self._split_raw(text)
+        self.type = raw[0]
+        self.params = raw[1:]
+        self.terms = self._parse_params()
+
+
+    def _split_raw(self, text: str) -&gt; str:
+        &#34;&#34;&#34;
+        Sanitise the input string for processing by:
+        - cropping initial `{{` and final `}}`
+        - removing newlines
+        - escaping `|` inside nested templates
+
+        Return the resulted string split by `|`
+        after reverting the escaping.
+        &#34;&#34;&#34;
+        text = text[2:-2]
+        text = text.replace(&#39;\n&#39;, &#39;&#39;)
+        for tmpl in re.findall(r&#39;\{\{.*?\}\}&#39;, text):
+            text = text.replace(tmpl, tmpl.replace(&#39;|&#39;, &#39;~!~&#39;))
+        return [e.replace(&#39;~!~&#39;, &#39;|&#39;) for e in text.split(&#39;|&#39;)]
+
+    def _parse_params(self) -&gt; list[Term]:
+        &#34;&#34;&#34;
+        Map information from the template&#39;s parameters to the
+        list of terms.
+        &#34;&#34;&#34;
+        pos_params = [param for param in self.params if &#39;=&#39; not in param]
+        key_params = [param for param in self.params if &#39;=&#39; in param]
+        terms = []
+
+        if self.type in self.types.NONDIRECTIONAL:
+            terms = [Term(*pos_params)]
+        elif self.type in self.types.DIRECTIONAL:
+            terms = [Term(*pos_params[1:])]
+        elif self.type in self.types.MULTIPLE:
+            for lemma in pos_params[1:]:  # exclude language
+                terms.append(Term(pos_params[0], lemma))
+        elif self.type in self.types.W:
+            terms = [Term(None, pos_params[0])]
+        
+        key_mappings = {&#39;alt&#39;: &#39;alt&#39;, &#39;gloss&#39;: &#39;t&#39;, &#39;t&#39;: &#39;t&#39;,
+                        &#39;tr&#39;: &#39;tr&#39;, &#39;id&#39;: &#39;id&#39;}
+        for key_param in key_params:
+            match = re.match(r&#39;&#39;&#39;
+                (?P&lt;name&gt;\D+) # name without index
+                (?P&lt;term_i&gt;\d*) # index
+                =
+                (?P&lt;value&gt;.*)
+            &#39;&#39;&#39;, key_param, flags=re.VERBOSE)
+            name = match[&#39;name&#39;]
+            term_i = int(match[&#39;term_i&#39;]) - 1 if match[&#39;term_i&#39;] else 0
+            value = match[&#39;value&#39;]
+            if name in key_mappings:
+                setattr(terms[term_i], key_mappings[name], value)
+        
+        return terms
+
+
+    @staticmethod
+    def parse_all(text: str) -&gt; list[Template]:
+        matches = re.findall(r&#39;&#39;&#39;
+            \{\{
+            (?: # repeat this but do not capture (instead capture all)
+            [^{}]* # usual content without nested brackets
+            | # or
+            \{\{[^{}]*\}\} # nested template
+            )+
+            \}\}
+            &#39;&#39;&#39;, text, flags=re.VERBOSE)
+        return [Template(match) for match in matches] if matches else []
+
+    def __repr__(self) -&gt; str:
+        return str(self.params)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="wiktionary.template.Template"><code class="flex name class">
+<span>class <span class="ident">Template</span></span>
+<span>(</span><span>text: str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Interface for a Wiktionary template.</p>
+<p>Parse the input string as a Wiktionary template.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Template:
+    &#34;&#34;&#34;Interface for a Wiktionary template.&#34;&#34;&#34;
+
+    types = TemplateType()
+    &#34;&#34;&#34;List of possible template types.&#34;&#34;&#34;
+
+    def __init__(self, text: str) -&gt; None:
+        &#34;&#34;&#34;
+        Parse the input string as a Wiktionary template.
+        &#34;&#34;&#34;
+
+        self.terms: list[Term] = []
+        &#34;&#34;&#34;List of terms (`Term` objects) referenced in the
+        parsed template.&#34;&#34;&#34;
+        self.params: list[str] = []
+        &#34;&#34;&#34;List of parameters (as strings) of the template.
+        Positional parameters are prepended by their position.&#34;&#34;&#34;
+        self.type: str = &#39;&#39;
+        &#34;&#34;&#34;Template type, as string.&#34;&#34;&#34;
+
+        raw = self._split_raw(text)
+        self.type = raw[0]
+        self.params = raw[1:]
+        self.terms = self._parse_params()
+
+
+    def _split_raw(self, text: str) -&gt; str:
+        &#34;&#34;&#34;
+        Sanitise the input string for processing by:
+        - cropping initial `{{` and final `}}`
+        - removing newlines
+        - escaping `|` inside nested templates
+
+        Return the resulted string split by `|`
+        after reverting the escaping.
+        &#34;&#34;&#34;
+        text = text[2:-2]
+        text = text.replace(&#39;\n&#39;, &#39;&#39;)
+        for tmpl in re.findall(r&#39;\{\{.*?\}\}&#39;, text):
+            text = text.replace(tmpl, tmpl.replace(&#39;|&#39;, &#39;~!~&#39;))
+        return [e.replace(&#39;~!~&#39;, &#39;|&#39;) for e in text.split(&#39;|&#39;)]
+
+    def _parse_params(self) -&gt; list[Term]:
+        &#34;&#34;&#34;
+        Map information from the template&#39;s parameters to the
+        list of terms.
+        &#34;&#34;&#34;
+        pos_params = [param for param in self.params if &#39;=&#39; not in param]
+        key_params = [param for param in self.params if &#39;=&#39; in param]
+        terms = []
+
+        if self.type in self.types.NONDIRECTIONAL:
+            terms = [Term(*pos_params)]
+        elif self.type in self.types.DIRECTIONAL:
+            terms = [Term(*pos_params[1:])]
+        elif self.type in self.types.MULTIPLE:
+            for lemma in pos_params[1:]:  # exclude language
+                terms.append(Term(pos_params[0], lemma))
+        elif self.type in self.types.W:
+            terms = [Term(None, pos_params[0])]
+        
+        key_mappings = {&#39;alt&#39;: &#39;alt&#39;, &#39;gloss&#39;: &#39;t&#39;, &#39;t&#39;: &#39;t&#39;,
+                        &#39;tr&#39;: &#39;tr&#39;, &#39;id&#39;: &#39;id&#39;}
+        for key_param in key_params:
+            match = re.match(r&#39;&#39;&#39;
+                (?P&lt;name&gt;\D+) # name without index
+                (?P&lt;term_i&gt;\d*) # index
+                =
+                (?P&lt;value&gt;.*)
+            &#39;&#39;&#39;, key_param, flags=re.VERBOSE)
+            name = match[&#39;name&#39;]
+            term_i = int(match[&#39;term_i&#39;]) - 1 if match[&#39;term_i&#39;] else 0
+            value = match[&#39;value&#39;]
+            if name in key_mappings:
+                setattr(terms[term_i], key_mappings[name], value)
+        
+        return terms
+
+
+    @staticmethod
+    def parse_all(text: str) -&gt; list[Template]:
+        matches = re.findall(r&#39;&#39;&#39;
+            \{\{
+            (?: # repeat this but do not capture (instead capture all)
+            [^{}]* # usual content without nested brackets
+            | # or
+            \{\{[^{}]*\}\} # nested template
+            )+
+            \}\}
+            &#39;&#39;&#39;, text, flags=re.VERBOSE)
+        return [Template(match) for match in matches] if matches else []
+
+    def __repr__(self) -&gt; str:
+        return str(self.params)</code></pre>
+</details>
+<h3>Class variables</h3>
+<dl>
+<dt id="wiktionary.template.Template.types"><code class="name">var <span class="ident">types</span></code></dt>
+<dd>
+<div class="desc"><p>List of possible template types.</p></div>
+</dd>
+</dl>
+<h3>Static methods</h3>
+<dl>
+<dt id="wiktionary.template.Template.parse_all"><code class="name flex">
+<span>def <span class="ident">parse_all</span></span>(<span>text: str) ‑> list[<a title="wiktionary.template.Template" href="#wiktionary.template.Template">Template</a>]</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def parse_all(text: str) -&gt; list[Template]:
+    matches = re.findall(r&#39;&#39;&#39;
+        \{\{
+        (?: # repeat this but do not capture (instead capture all)
+        [^{}]* # usual content without nested brackets
+        | # or
+        \{\{[^{}]*\}\} # nested template
+        )+
+        \}\}
+        &#39;&#39;&#39;, text, flags=re.VERBOSE)
+    return [Template(match) for match in matches] if matches else []</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="wiktionary.template.Template.params"><code class="name">var <span class="ident">params</span></code></dt>
+<dd>
+<div class="desc"><p>List of parameters (as strings) of the template.
+Positional parameters are prepended by their position.</p></div>
+</dd>
+<dt id="wiktionary.template.Template.terms"><code class="name">var <span class="ident">terms</span></code></dt>
+<dd>
+<div class="desc"><p>List of terms (<code><a title="wiktionary.template.Term" href="#wiktionary.template.Term">Term</a></code> objects) referenced in the
+parsed template.</p></div>
+</dd>
+<dt id="wiktionary.template.Template.type"><code class="name">var <span class="ident">type</span></code></dt>
+<dd>
+<div class="desc"><p>Template type, as string.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="wiktionary.template.TemplateType"><code class="flex name class">
+<span>class <span class="ident">TemplateType</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Static sets of template type names mappings and combinations.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class TemplateType():
+    &#34;&#34;&#34;
+    Static sets of template type names mappings and combinations.
+    &#34;&#34;&#34;
+    INHERITED = {&#39;inh&#39;, &#39;inherited&#39;, &#39;inh+&#39;}
+    BORROWED = {&#39;bor&#39;, &#39;borrowed&#39;, &#39;bor+&#39;}
+    DERIVED = {&#39;der&#39;, &#39;derived&#39;, &#39;der+&#39;}
+    ROOT = {&#39;root&#39;}
+    AFFIX = {&#39;af&#39;, &#39;affix&#39;, &#39;vrd&#39;, &#39;compound&#39;}  # no compound and vrd
+    SUFFIX = {&#39;suf&#39;, &#39;suffix&#39;}
+    PREFIX = {&#39;prefix&#39;}
+    MENTION = {&#39;m&#39;, &#39;mention&#39;, &#39;back-form&#39;, &#39;m+&#39;}  # no backform
+    LINK = {&#39;l&#39;, &#39;link&#39;}
+    COGNATE = {&#39;cog&#39;}
+    COMPOUND = {&#39;com&#39;}
+    W = {&#39;w&#39;}
+    DIRECTIONAL = INHERITED | BORROWED | DERIVED | ROOT
+    MULTIPLE = AFFIX | SUFFIX | PREFIX
+    NONDIRECTIONAL = MENTION | LINK</code></pre>
+</details>
+<h3>Class variables</h3>
+<dl>
+<dt id="wiktionary.template.TemplateType.AFFIX"><code class="name">var <span class="ident">AFFIX</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="wiktionary.template.TemplateType.BORROWED"><code class="name">var <span class="ident">BORROWED</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="wiktionary.template.TemplateType.COGNATE"><code class="name">var <span class="ident">COGNATE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="wiktionary.template.TemplateType.COMPOUND"><code class="name">var <span class="ident">COMPOUND</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="wiktionary.template.TemplateType.DERIVED"><code class="name">var <span class="ident">DERIVED</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="wiktionary.template.TemplateType.DIRECTIONAL"><code class="name">var <span class="ident">DIRECTIONAL</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="wiktionary.template.TemplateType.INHERITED"><code class="name">var <span class="ident">INHERITED</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="wiktionary.template.TemplateType.LINK"><code class="name">var <span class="ident">LINK</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="wiktionary.template.TemplateType.MENTION"><code class="name">var <span class="ident">MENTION</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="wiktionary.template.TemplateType.MULTIPLE"><code class="name">var <span class="ident">MULTIPLE</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="wiktionary.template.TemplateType.NONDIRECTIONAL"><code class="name">var <span class="ident">NONDIRECTIONAL</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="wiktionary.template.TemplateType.PREFIX"><code class="name">var <span class="ident">PREFIX</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="wiktionary.template.TemplateType.ROOT"><code class="name">var <span class="ident">ROOT</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="wiktionary.template.TemplateType.SUFFIX"><code class="name">var <span class="ident">SUFFIX</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="wiktionary.template.TemplateType.W"><code class="name">var <span class="ident">W</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="wiktionary.template.Term"><code class="flex name class">
+<span>class <span class="ident">Term</span></span>
+<span>(</span><span>lang_code, lemma='', alt='', t='')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Representation for terms referenced in templates.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Term:
+    &#34;&#34;&#34;
+    Representation for terms referenced in templates.
+    &#34;&#34;&#34;
+    def __init__(self, lang_code, lemma=&#39;&#39;, alt=&#39;&#39;, t=&#39;&#39;) -&gt; None:
+        self.lemma = lemma
+        &#34;Lemma of the term&#34;
+        self.lang_code = lang_code
+        &#34;Wiktionary language code&#34;
+        self.alt = alt
+        &#34;Alternative form to be displayed&#34;
+        self.t = t
+        &#34;Translation of the term&#34;
+        self.tr = &#39;&#39;
+        &#34;Transliteration of the term&#34;
+        self.id = &#39;&#39;
+        &#34;Meaning ID of the term&#34;
+
+        if re.match(r&#39;\{\{.*\}\}&#39;, lemma):  # if lemma is a template
+            self.lemma = Template(lemma).terms[0].lemma
+
+
+    def __repr__(self) -&gt; str:
+        show = self.alt if self.alt else self.lemma
+        return f&#39;{show} ({self.lang_code}) &#34;{self.t}&#34;&#39;</code></pre>
+</details>
+<h3>Instance variables</h3>
+<dl>
+<dt id="wiktionary.template.Term.alt"><code class="name">var <span class="ident">alt</span></code></dt>
+<dd>
+<div class="desc"><p>Alternative form to be displayed</p></div>
+</dd>
+<dt id="wiktionary.template.Term.id"><code class="name">var <span class="ident">id</span></code></dt>
+<dd>
+<div class="desc"><p>Meaning ID of the term</p></div>
+</dd>
+<dt id="wiktionary.template.Term.lang_code"><code class="name">var <span class="ident">lang_code</span></code></dt>
+<dd>
+<div class="desc"><p>Wiktionary language code</p></div>
+</dd>
+<dt id="wiktionary.template.Term.lemma"><code class="name">var <span class="ident">lemma</span></code></dt>
+<dd>
+<div class="desc"><p>Lemma of the term</p></div>
+</dd>
+<dt id="wiktionary.template.Term.t"><code class="name">var <span class="ident">t</span></code></dt>
+<dd>
+<div class="desc"><p>Translation of the term</p></div>
+</dd>
+<dt id="wiktionary.template.Term.tr"><code class="name">var <span class="ident">tr</span></code></dt>
+<dd>
+<div class="desc"><p>Transliteration of the term</p></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="wiktionary" href="index.html">wiktionary</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="wiktionary.template.Template" href="#wiktionary.template.Template">Template</a></code></h4>
+<ul class="">
+<li><code><a title="wiktionary.template.Template.params" href="#wiktionary.template.Template.params">params</a></code></li>
+<li><code><a title="wiktionary.template.Template.parse_all" href="#wiktionary.template.Template.parse_all">parse_all</a></code></li>
+<li><code><a title="wiktionary.template.Template.terms" href="#wiktionary.template.Template.terms">terms</a></code></li>
+<li><code><a title="wiktionary.template.Template.type" href="#wiktionary.template.Template.type">type</a></code></li>
+<li><code><a title="wiktionary.template.Template.types" href="#wiktionary.template.Template.types">types</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="wiktionary.template.TemplateType" href="#wiktionary.template.TemplateType">TemplateType</a></code></h4>
+<ul class="two-column">
+<li><code><a title="wiktionary.template.TemplateType.AFFIX" href="#wiktionary.template.TemplateType.AFFIX">AFFIX</a></code></li>
+<li><code><a title="wiktionary.template.TemplateType.BORROWED" href="#wiktionary.template.TemplateType.BORROWED">BORROWED</a></code></li>
+<li><code><a title="wiktionary.template.TemplateType.COGNATE" href="#wiktionary.template.TemplateType.COGNATE">COGNATE</a></code></li>
+<li><code><a title="wiktionary.template.TemplateType.COMPOUND" href="#wiktionary.template.TemplateType.COMPOUND">COMPOUND</a></code></li>
+<li><code><a title="wiktionary.template.TemplateType.DERIVED" href="#wiktionary.template.TemplateType.DERIVED">DERIVED</a></code></li>
+<li><code><a title="wiktionary.template.TemplateType.DIRECTIONAL" href="#wiktionary.template.TemplateType.DIRECTIONAL">DIRECTIONAL</a></code></li>
+<li><code><a title="wiktionary.template.TemplateType.INHERITED" href="#wiktionary.template.TemplateType.INHERITED">INHERITED</a></code></li>
+<li><code><a title="wiktionary.template.TemplateType.LINK" href="#wiktionary.template.TemplateType.LINK">LINK</a></code></li>
+<li><code><a title="wiktionary.template.TemplateType.MENTION" href="#wiktionary.template.TemplateType.MENTION">MENTION</a></code></li>
+<li><code><a title="wiktionary.template.TemplateType.MULTIPLE" href="#wiktionary.template.TemplateType.MULTIPLE">MULTIPLE</a></code></li>
+<li><code><a title="wiktionary.template.TemplateType.NONDIRECTIONAL" href="#wiktionary.template.TemplateType.NONDIRECTIONAL">NONDIRECTIONAL</a></code></li>
+<li><code><a title="wiktionary.template.TemplateType.PREFIX" href="#wiktionary.template.TemplateType.PREFIX">PREFIX</a></code></li>
+<li><code><a title="wiktionary.template.TemplateType.ROOT" href="#wiktionary.template.TemplateType.ROOT">ROOT</a></code></li>
+<li><code><a title="wiktionary.template.TemplateType.SUFFIX" href="#wiktionary.template.TemplateType.SUFFIX">SUFFIX</a></code></li>
+<li><code><a title="wiktionary.template.TemplateType.W" href="#wiktionary.template.TemplateType.W">W</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="wiktionary.template.Term" href="#wiktionary.template.Term">Term</a></code></h4>
+<ul class="two-column">
+<li><code><a title="wiktionary.template.Term.alt" href="#wiktionary.template.Term.alt">alt</a></code></li>
+<li><code><a title="wiktionary.template.Term.id" href="#wiktionary.template.Term.id">id</a></code></li>
+<li><code><a title="wiktionary.template.Term.lang_code" href="#wiktionary.template.Term.lang_code">lang_code</a></code></li>
+<li><code><a title="wiktionary.template.Term.lemma" href="#wiktionary.template.Term.lemma">lemma</a></code></li>
+<li><code><a title="wiktionary.template.Term.t" href="#wiktionary.template.Term.t">t</a></code></li>
+<li><code><a title="wiktionary.template.Term.tr" href="#wiktionary.template.Term.tr">tr</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

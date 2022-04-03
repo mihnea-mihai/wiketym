@@ -1,7 +1,7 @@
 from __future__ import annotations
 import json
 from functools import cache, cached_property
-from wiktionary.template import Template
+# from wiktionary import Template
 import requests
 import re
 
@@ -11,50 +11,57 @@ class Page:
     Interface to a Wiktionary Page.
     """
 
+    def __init__(self, title: str) -> None:        
+        self.title = title
+        """Title of the page."""
+        self.parsed = self._API_call()
+        """API call result."""
+        self.wikitext: str = self.parsed.get('wikitext', {}).get('*', '')
+        """Full wikitext."""
+
     @cache
     @staticmethod
-    def get(title: str) -> Page:
+    def get(title: str):
         """
         Get a `Page` guaranteed to be unique within this run,
         otherwise create and initialise one.
         """
         return Page(title)
 
-    with open('cache.json', encoding='utf-8') as file:
-        _cache = json.load(file)
+    @classmethod
+    def _get_cache(cls):
+        with open('data/cache.json', encoding='utf-8') as file:
+            cls._cache = json.load(file)
 
-    def __init__(self, title: str) -> None:
-        self.title = title
-        """Title of the page."""
+    def _API_call(self) -> dict:
+        """
+        Return API response either from cache or from actual API call.
+        """
+        try:
+            self._cache
+        except AttributeError:
+            self._get_cache()
 
-        def _API_call() -> dict:
-            """
-            Return API response either from cache or from actual API call.
-            """
-            url = 'https://en.wiktionary.org/w/api.php'
+        url = 'https://en.wiktionary.org/w/api.php'
 
-            if self.title not in self._cache:
-                params = {
-                    'action': 'parse',
-                    'format': 'json',
-                    'page': self.title,
-                    'prop': 'sections|wikitext'
-                }
-                self._cache[self.title] = requests.get(url, params).json()
-                with open('cache.json', 'w', encoding='utf-8') as file:
-                    json.dump(self._cache, file, ensure_ascii=False)
-            return self._cache[self.title].get('parse', {})
+        if self.title not in self._cache:  # Add to cache if missing
+            params = {
+                'action': 'parse',
+                'format': 'json',
+                'page': self.title,
+                'prop': 'sections|wikitext'
+            }
+            self._cache[self.title] = requests.get(url, params).json()
+            with open('data/cache.json', 'w', encoding='utf-8') as file:
+                json.dump(self._cache, file, ensure_ascii=False)
+        # Return from cache anyway
+        return self._cache[self.title].get('parse', {})
 
-        self.parsed = _API_call()
-        """API call result."""
-
-        self.wikitext: str = self.parsed.get('wikitext', {}).get('*', '')
-        """Full wikitext."""
 
     @cached_property
     def sections(self):
         """
-        Cached list of sections objects for the current page.
+        Cached list of `Section` objects for the current page.
         """
         return [
             Section(self, obj, wikitext)
@@ -73,12 +80,14 @@ class Page:
             if section.level == 2 and section.line == lang_name:
                 return section
 
+
     def __repr__(self) -> str:
         """
         >>> Page.get('cat')
         Page(cat)
         """
         return f'Page({self.title})'
+
 
 
 class Section:
@@ -112,10 +121,10 @@ class Section:
             if section.number.startswith(self.number+'.')
         ]
 
-    @cached_property
-    def templates(self) -> list[Template]:
-        return [Template(text)
-                for text in Template.extract_all_raw(self.wikitext)]
+    # @cached_property
+    # def templates(self) -> list[Template]:
+    #     return [Template(text)
+    #             for text in Template.extract_all_raw(self.wikitext)]
 
     def get_subsection(self, subsection_line):
         for subsection in self.subsections:
@@ -123,4 +132,4 @@ class Section:
                 return subsection
 
     def __repr__(self) -> str:
-        return f'Page({self.page.title}).Section({self.line})'
+        return f'Page({self.page.title}).Section({self.number},{self.line})'

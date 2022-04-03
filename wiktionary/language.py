@@ -4,7 +4,7 @@ Interface to a language in Wiktionary.
 
 
 import json
-from functools import cache
+from functools import cache, cached_property
 
 import requests
 from bs4 import BeautifulSoup
@@ -12,17 +12,25 @@ from bs4 import BeautifulSoup
 
 class Language:
     """
-    language int
+    Mapping between language codes and the corresponding language
+    name or metadata in Wiktionary.
     """
-    with open('langs.json', encoding='utf-8') as file:
-        _langs: dict = json.load(file)
+    with open('data/langs.json', encoding='utf-8') as file:
+        lang_data = json.load(file)
 
     def __init__(self, code) -> None:
-        self.name = self._langs[code]['name']
-        self.page_name = self._langs[code]['page_name']
-        self.diacr = self._langs[code]['diacr']
-        self.pro = self._langs[code]['pro']
+        lang_obj = self.lang_data[code]
+        self.name = lang_obj['name']
+        """Friendly name of the language."""
+        self.page_name = lang_obj['page_name']
+        """Name of the language in page context.
+        (e.g. `Latin` as opposed to `Vulgar Latin`)."""
+        self.diacr = lang_obj['diacr']
+        """Whether or not diacritics should be stripped."""
+        self.pro = lang_obj['pro']
+        """Whether or not this is a reconstruction language."""
         self.code = code
+        """Language code."""
 
     def __str__(self) -> str:
         return self.name
@@ -35,12 +43,15 @@ class Language:
         """
         return Language(code)
 
+    # def lang_data(self):
+    #     """Dictionary of Wiktionary language codes
+    #     to properties mappings."""
+    #     with open('data/langs.json', encoding='utf-8') as file:
+    #         return json.load(file)
+
     @staticmethod
     def build():
-        """
-        Generate the json of languages from
-        Wiktionary pages.
-        """
+        """Generate the json of languages from Wiktionary pages."""
         url = 'https://en.wiktionary.org/wiki'
         langs = {}
 

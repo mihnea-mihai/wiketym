@@ -4,7 +4,6 @@ __pycache__/
 old/
 test.*
 sandbox.py
-wiketym-dev/
-wiketym-qa/
-wiketym/
+.venv/
 *.pdf
+data/cache.json
