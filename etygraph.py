@@ -80,13 +80,13 @@ class EtyGraph(nx.DiGraph):
 
     def render(self, path):
         nx.nx_pydot.to_pydot(self).write_pdf(path)
+if __name__ == '__main__':
+    G = EtyGraph()
+    G.build({Word.get('water', 'en')})
+    reduced = G.reduce()
+    reduced.render('outputs/test.pdf')
+    # G.connect(Word.get('cat', 'en'), Word.get('pix', 'ro'), None)
 
-G = EtyGraph()
-G.build({Word.get('water', 'en')})
-reduced = G.reduce()
-reduced.render('outputs/test.pdf')
-# G.connect(Word.get('cat', 'en'), Word.get('pix', 'ro'), None)
+    # G.render('outputs/test.pdf')
 
-# G.render('outputs/test.pdf')
-
-# ZBURA SENS VOLO
+    # ZBURA SENS VOLO
