@@ -166,7 +166,7 @@ src/wiketym/data/cache.json
 html/
 
 # Sandbox notebook and scripts
-sandbox*
+sandbox.py
 
 # vscode settings
 .vscode/

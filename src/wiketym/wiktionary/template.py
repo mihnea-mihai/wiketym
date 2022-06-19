@@ -51,7 +51,7 @@ class Template:
         NONDIRECTIONAL = MENTION | LINK
         ALL = DIRECTIONAL | MULTIPLE | NONDIRECTIONAL
 
-    TO_LINK_MAPPING = load_json('src/wiketym/data/template_to_link.json')
+    TO_LINK_MAPPING = load_json("src/wiketym/data/template_to_link.json")
 
     def __init__(self, text: str) -> None:
         self.text = text
@@ -132,6 +132,6 @@ class Template:
             flags=re.VERBOSE,
         )
         return [Template(match) for match in matches] if matches else []
-    
+
     def __repr__(self) -> str:
-        return f'{self.type} {self.params}'
+        return f"{self.type} {self.params}"

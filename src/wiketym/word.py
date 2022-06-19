@@ -28,7 +28,7 @@ class Word:
         """Wikipedia Page Section corresponding to this word."""
 
         self.templates: list[Template] = Template.parse_all(
-            self.entry.get(line=lambda x: x.startswith('Etymology')).strict_wikitext
+            self.entry.get(line=lambda x: x.startswith("Etymology")).strict_wikitext
         )
         """List of all parsed templates in the Etymology section wikitext."""
 

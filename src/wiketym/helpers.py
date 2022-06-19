@@ -14,8 +14,9 @@ def load_json(path: str) -> dict:
     except FileNotFoundError:
         return {}
 
+
 def dump_json(path: str, dict_: Any) -> None:
-    with open(path, 'w', encoding="utf-8") as file:
+    with open(path, "w", encoding="utf-8") as file:
         return json.dump(dict_, file, ensure_ascii=False)
 
 

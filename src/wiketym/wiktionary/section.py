@@ -71,7 +71,7 @@ class Section:
         return self.page.wikitext[
             self.byteoffset : getattr(next_section, "byteoffset", None)
         ]
-    
+
     @cached_property
     def strict_wikitext(self):
         next_section: Section = get(

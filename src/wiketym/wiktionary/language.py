@@ -40,7 +40,7 @@ class Language:
         return self.name
 
     def __repr__(self) -> str:
-        return f'Language({self.code})'
+        return f"Language({self.code})"
 
     @staticmethod
     def build():

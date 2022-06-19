@@ -3,13 +3,16 @@ from .word import Word
 from .etygraph import EtyGraph
 from .wiktionary.api import API
 
+
 class Query:
+    ALL_LINKS = load_json("src/wiketym/data/link_types.json").keys()
+
     def __init__(
         self,
         start_words: set[Word] = [],
-        allowed_links: set[str] = load_json("src/wiketym/data/link_types.json").keys(),
+        allowed_links: set[str] = ALL_LINKS,
         max_level: int = 5,
-        allow_invalid: bool = True,
+        allow_invalid: bool = False,
         max_count: int = 2,
     ) -> None:
         self.start_words: str[Word] = start_words
@@ -48,4 +51,4 @@ class Query:
                 self.handled_words.add(word)
 
         self.G.reduce().render(f"test")
-        dump_json('src/wiketym/data/cache.json', API._cache)
+        dump_json("src/wiketym/data/cache.json", API._cache)
