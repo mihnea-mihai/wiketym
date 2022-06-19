@@ -34,6 +34,5 @@ class EtyGraph(nx.DiGraph):
 
     def render(self, filename):
         source = nx.nx_pydot.to_pydot(self).to_string()
-        dot = graphviz.Source(source)
-        # dot = graphviz.Source(source).unflatten(5)
+        dot = graphviz.Source(source).unflatten(5)
         dot.render(f"outputs/{filename}")

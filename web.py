@@ -1,9 +1,9 @@
 from flask import Flask, request, render_template, send_file
-from word import Word
-import networkx as nx
-from werkzeug.utils import secure_filename
-from wiktionary import Language
-from etygraph import EtyGraph
+# from werkzeug.utils import secure_filename
+
+from src.wiketym.wiktionary.language import Language
+from src.wiketym.query import Query
+from src.wiketym.word import Word
 
 app = Flask(__name__)
 
@@ -22,17 +22,8 @@ def my_form():
 
 @app.route("/generate", methods=["GET"])
 def my_form_post():
-    G = EtyGraph()
-    lemma = request.args["lemma"]
-    lang_code = request.args["lang_code"]
-    G.build({Word.get(lemma, lang_code)})
-    filename = secure_filename(f"{lemma}_{lang_code}.pdf") or "file.pdf"
-    reduced: nx.DiGraph = nx.algorithms.transitive_reduction(G)
-    reduced.add_nodes_from(G.nodes(data=True))
-    reduced.add_edges_from((u, v, G.edges[u, v]) for u, v in reduced.edges)
-    nx.nx_pydot.to_pydot(reduced).write_pdf(filename)
-
-    return send_file(filename, as_attachment=False)
+    Query([Word(request.args['lemma'], request.args['lang_code'])])
+    return send_file('outputs/test.pdf', as_attachment=False)
 
 
 if __name__ == "__main__":

@@ -2,7 +2,7 @@ from .helpers import load_json, dump_json
 from .word import Word
 from .etygraph import EtyGraph
 from .wiktionary.api import API
-
+from werkzeug.utils import secure_filename
 
 class Query:
     ALL_LINKS = load_json("src/wiketym/data/link_types.json").keys()
@@ -49,6 +49,6 @@ class Query:
                                     self.G.add(related_word)
                                 self.G.link(related_word, word, link_type)
                 self.handled_words.add(word)
-
+        # filename = secure_filename(f"{lemma}_{lang_code}.pdf") or "file.pdf"
         self.G.reduce().render(f"test")
         dump_json("src/wiketym/data/cache.json", API._cache)
