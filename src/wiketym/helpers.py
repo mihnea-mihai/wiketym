@@ -8,8 +8,15 @@ from typing import Any, Iterable, Iterator, Type
 
 def load_json(path: str) -> dict:
     """Convenience function to load a dict from a JSON file by path."""
-    with open(path, encoding="utf-8") as file:
-        return json.load(file)
+    try:
+        with open(path, encoding="utf-8") as file:
+            return json.load(file)
+    except FileNotFoundError:
+        return {}
+
+def dump_json(path: str, dict_: Any) -> None:
+    with open(path, 'w', encoding="utf-8") as file:
+        return json.dump(dict_, file, ensure_ascii=False)
 
 
 def get(

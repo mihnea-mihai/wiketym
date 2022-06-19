@@ -1,7 +1,7 @@
-from .helpers import load_json
+from .helpers import load_json, dump_json
 from .word import Word
 from .etygraph import EtyGraph
-
+from .wiktionary.api import API
 
 class Query:
     def __init__(
@@ -46,9 +46,6 @@ class Query:
                                     self.G.add(related_word)
                                 self.G.link(related_word, word, link_type)
                 self.handled_words.add(word)
-            # level += 1
-            # if level >= max_level:
-            #     break
 
         self.G.reduce().render(f"test")
-        # self.G.render(f"test")
+        dump_json('src/wiketym/data/cache.json', API._cache)
