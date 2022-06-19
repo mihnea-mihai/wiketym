@@ -162,4 +162,8 @@ cython_debug/
 # Remove the cache from git
 data/cache.json
 
+# HTML documentation
+html/
 
+# Sandbox notebook and scripts
+sandbox*
