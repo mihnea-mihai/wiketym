@@ -1,4 +1,4 @@
-from wiktionary import Template
+from src.wiketym.wiktionary import Template
 
 class TestTemplate:
 
@@ -57,4 +57,3 @@ class TestTemplate:
         assert tpl.type == 'root'
         assert term.lemma == '*gʷeyh₃-'
         assert term.lang_code == 'ine-pro'
-

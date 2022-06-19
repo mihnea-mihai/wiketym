@@ -160,10 +160,16 @@ cython_debug/
 #.idea/
 
 # Remove the cache from git
-data/cache.json
+src/wiketym/data/cache.json
 
 # HTML documentation
 html/
 
 # Sandbox notebook and scripts
 sandbox*
+
+# vscode settings
+.vscode/
+
+# PDF outputs
+outputs/
