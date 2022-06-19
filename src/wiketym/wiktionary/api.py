@@ -35,7 +35,5 @@ class API:
             }
             response: dict = requests.get(cls.url, params).json()
             cls._cache[title] = response
-            with open("src/wiketym/data/cache.json", "w", encoding="utf-8") as file:
-                json.dump(cls._cache, file, ensure_ascii=False)
 
         return response.get("parse", {})
