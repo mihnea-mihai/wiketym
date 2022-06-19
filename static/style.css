@@ -1,0 +1,26 @@
+:root {
+    --black-background: #212121;
+    --white-text: #fafafa;
+    font-size: larger;
+}
+
+body {
+    background-color: var(--black-background);
+    color: var(--white-text);
+    text-align: center;
+}
+input, select {
+    margin-bottom: 2em;
+    font-size: 1em;
+    max-width: 80%;
+}
+input[type=submit] {
+    height: 2rem;
+    width: 6rem;
+    /* font-size: x-large; */
+}
+form {
+    padding-top: 2em;
+}
+
+

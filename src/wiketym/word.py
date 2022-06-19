@@ -42,6 +42,15 @@ class Word:
         # self._ensure_redirect()
 
         # self._populate_links(Template.Type.ALL)
+        if self.redirects_to():
+            self.entry.wikitext = ' '
+
+    def redirects_to(self) -> str:
+        if match := re.match(r"#REDIRECT \[\[(.+)\]\]", self.page.wikitext):
+            lemma = match[1]
+            if "/" in lemma:
+                lemma = "*" + lemma.split("/", maxsplit=1)[1]
+            return lemma
 
     @property
     def page_title(self):
@@ -81,13 +90,9 @@ class Word:
                     links[Template.TO_LINK_MAPPING[tpl.type]].append(
                         Word(term.lemma, term.lang_code)
                     )
-
-        if match := re.match(r"#REDIRECT \[\[(.+)\]\]", self.page.wikitext):
-            lemma = match[1]
-            if "/" in lemma:
-                lemma = "*" + lemma.split("/", maxsplit=1)[1]
+        if lemma := self.redirects_to():
             links["redirects_to"] = [Word(lemma, self.lang.code)]
-
+        
         return links
 
     NODE_STYLES = load_json("src/wiketym/data/styles.json")["nodes"]
@@ -101,6 +106,8 @@ class Word:
 
         node = {}
         node["label"] = "<" + "<br/>".join(text) + ">"
+
+        node['URL'] = f'"https://en.wiktionary.org/wiki/{self.page_title}#{self.lang.page_name.replace(" ", "_")}"'
 
         if not self:
             node |= self.NODE_STYLES["invalid"]

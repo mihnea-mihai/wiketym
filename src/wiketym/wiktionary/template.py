@@ -35,7 +35,7 @@ class Term:
 class Template:
     class Type:
         INHERITED = {"inh", "inherited", "inh+"}
-        BORROWED = {"bor", "borrowed", "bor+"}
+        BORROWED = {"bor", "borrowed", "bor+", "lbor"}
         DERIVED = {"der", "derived", "der+"}
         ROOT = {"root"}
         AFFIX = {"af", "affix", "vrd", "compound"}  # no compound and vrd

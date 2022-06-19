@@ -4,6 +4,7 @@ from .etygraph import EtyGraph
 from .wiktionary.api import API
 from werkzeug.utils import secure_filename
 
+
 class Query:
     ALL_LINKS = load_json("src/wiketym/data/link_types.json").keys()
 
@@ -14,6 +15,7 @@ class Query:
         max_level: int = 5,
         allow_invalid: bool = False,
         max_count: int = 2,
+        reduce: bool = True,
     ) -> None:
         self.start_words: str[Word] = start_words
         """Words for the current query."""
@@ -31,12 +33,16 @@ class Query:
 
         next_future_words = start_words
         level = 0  # will be incremented
-        while (future_words := next_future_words) and (level := level + 1 <= max_level):
+        while (future_words := next_future_words) and (
+            (level := level + 1) <= max_level
+        ):
             next_future_words = set()
             for word in future_words:
                 related_count = 0
                 for link_type, related_words in word.links.items():
                     if related_count >= max_count:
+                        break
+                    if link_type in {'mentioned', 'linked'} and related_count:
                         break
                     if link_type in self.allowed_links:
                         for related_word in related_words:
@@ -50,5 +56,8 @@ class Query:
                                 self.G.link(related_word, word, link_type)
                 self.handled_words.add(word)
         # filename = secure_filename(f"{lemma}_{lang_code}.pdf") or "file.pdf"
-        self.G.reduce().render(f"test")
+        if reduce:
+            self.G.reduce().render(f"test")
+        else:
+            self.G.render(f"test")
         dump_json("src/wiketym/data/cache.json", API._cache)

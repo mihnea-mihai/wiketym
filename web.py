@@ -1,4 +1,5 @@
 from flask import Flask, request, render_template, send_file
+
 # from werkzeug.utils import secure_filename
 
 from src.wiketym.wiktionary.language import Language
@@ -22,8 +23,17 @@ def my_form():
 
 @app.route("/generate", methods=["GET"])
 def my_form_post():
-    Query([Word(request.args['lemma'], request.args['lang_code'])])
-    return send_file('outputs/test.pdf', as_attachment=False)
+    word1 = Word(request.args['lemma1'], request.args['lang_code1'])
+    word2 = Word(request.args['lemma2'], request.args['lang_code2'])
+    word_list = [word1, word2] if word2 else [word1]
+    Query(
+        word_list,
+        allow_invalid=(request.args["allow_invalid"] == "show"),
+        max_level=int(request.args['max_level']),
+        max_count=int(request.args['max_count']),
+        reduce=request.args['reduce'] == 'true'
+    )
+    return send_file("outputs/test.pdf", as_attachment=False)
 
 
 if __name__ == "__main__":
