@@ -160,7 +160,7 @@ cython_debug/
 #.idea/
 
 # Remove the cache from git
-# src/wiketym/data/cache.json
+src/wiketym/data/cache.json
 
 # HTML documentation
 html/
