@@ -46,10 +46,10 @@ class Template:
         COGNATE = {"cog"}
         COMPOUND = {"com"}
         W = {"w"}
-        DIRECTIONAL = INHERITED | BORROWED | DERIVED
+        DIRECTIONAL = INHERITED | BORROWED | DERIVED | ROOT
         MULTIPLE = AFFIX | SUFFIX | PREFIX
         NONDIRECTIONAL = MENTION | LINK
-        ALL = DIRECTIONAL | MULTIPLE | NONDIRECTIONAL
+        ALL = DIRECTIONAL | MULTIPLE | NONDIRECTIONAL | W | ROOT
 
     TO_LINK_MAPPING = load_json("src/wiketym/data/template_to_link.json")
 
