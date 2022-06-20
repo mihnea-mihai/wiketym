@@ -1,0 +1,18 @@
+{
+    "inh": "inherited_from",
+    "bor": "borrowed_from",
+    "der": "derived_from",
+    "suf": "internally_from",
+    "suffix": "internally_from",
+    "prefix": "internally_from",
+    "lbor": "borrowed_from",
+    "af": "internally_from",
+    "affix": "internally_from",
+    "m": "mentioned",
+    "m+": "mentioned",
+    "l": "linked",
+    "l+": "linked",
+    "bor+": "borrowed_from",
+    "uder": "derived_from",
+    "inh+": "inherited_from"
+}

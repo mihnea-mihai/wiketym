@@ -1,51 +1,55 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width">
-        <title>Wiketym - Generate new</title>
-    </head>
-    <body>
-        <form action="/generate" method="GET" target="_blank">
-            <label for="lemma">Word</label><br>
-            <input name="lemma"><br>
-            <label for="lang_code">Language</label><br>
-            <select name="lang_code">
-                {% for lang in languages %}
-                    <option value="{{lang.code}}">{{lang.name}}</option>
-                {% endfor %}
-            </select><br>
-            <input type="submit" value="Generate">
-        </form>
-        <style>
-            :root {
-                --black-background: #212121;
-                --white-text: #fafafa;
-                font-size: xx-large;
-            }
 
-            body {
-                background-color: var(--black-background);
-                color: var(--white-text);
-                text-align: center;
-            }
-            input, select {
-                margin-bottom: 2em;
-                font-size: 1em;
-                max-width: 80%;
-            }
-            input[type=submit] {
-                height: 2rem;
-                width: 6rem;
-                font-size: xx-large;
-            }
-            form {
-                padding-top: 2em;
-            }
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Wiketym - Generate new</title>
+</head>
 
-          
+<body>
+    <form action="/generate" method="GET" target="_blank">
+        <label for="lemma1">Word</label><br>
+        <input name="lemma1"><br>
 
-        </style>
-    </body>
+        <label for="lang_code1">Language</label><br>
+        <select name="lang_code1">
+            {% for lang in languages %}
+            <option value="{{lang.code}}">{{lang.name}}</option>
+            {% endfor %}
+        </select><br>
+
+        <label for="lemma2">Word</label><br>
+        <input name="lemma2"><br>
+
+        <label for="lang_code2">Language</label><br>
+        <select name="lang_code2">
+            {% for lang in languages %}
+            <option value="{{lang.code}}">{{lang.name}}</option>
+            {% endfor %}
+        </select><br>
+
+        <label for="show-invalid">Show</label>
+        <input type="radio" name="allow_invalid" value="show" id="show-invalid">
+        <label for="hide-invalid">Hide</label>
+        <input type="radio" name="allow_invalid" value="hide" id="hide-invalid" checked>
+        <br>
+        <label for="max_level">Maximum distance form origin word</label>
+        <input type="number" name="max_level" value="5" min="1" max="23">
+        <br>
+        <label for="max_count">Maximum upwards connections per word</label>
+        <input type="number" name="max_count" value="2" min="1" max="10">
+        <br>
+
+        <label for="do-reduce">Reduce</label>
+        <input type="radio" name="reduce" value="true" id="do-reduce" checked>
+        <label for="dont-reduce">Keep</label>
+        <input type="radio" name="reduce" value="false" id="dont-reduce">
+        <br>
+
+        <input type="submit" value="Generate">
+    </form>
+</body>
+
 </html>
-
