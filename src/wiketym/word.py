@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import textwrap
+
 import re
 import unicodedata
 from functools import cache, cached_property
@@ -9,6 +11,17 @@ from .wiktionary import Language, Page, Section, Template
 
 
 class Word:
+    MEANING_NAMES = {
+        "Noun",
+        "Verb",
+        "Adjective",
+        "Adverb",
+        "Root",
+        "Proper noun",
+        "Suffix",
+        "Prefix",
+    }
+
     @cache
     def __new__(cls, lemma, lang_code):
         return object.__new__(cls)
@@ -43,7 +56,11 @@ class Word:
 
         # self._populate_links(Template.Type.ALL)
         if self.redirects_to():
-            self.entry.wikitext = ' '
+            self.entry.wikitext = " "
+
+        self.meaning_wikitext: str = self.entry.get(
+            line=self.is_meaning_section
+        ).wikitext
 
     def redirects_to(self) -> str:
         if match := re.match(r"#REDIRECT \[\[(.+)\]\]", self.page.wikitext):
@@ -80,6 +97,12 @@ class Word:
 
         return title
 
+    def valid_ascendant(self, word: Word) -> bool:
+        if "==Suffix==" in self.meaning_wikitext:
+            if "==Suffix==" not in word.meaning_wikitext:
+                return False
+        return True
+
     @cached_property
     def links(self) -> dict[str, list[Word]]:
         links: dict[str, list[Word]] = load_json("src/wiketym/data/link_types.json")
@@ -87,12 +110,31 @@ class Word:
         for tpl in self.templates:
             if tpl.type in Template.TO_LINK_MAPPING:
                 for term in tpl.terms:
-                    links[Template.TO_LINK_MAPPING[tpl.type]].append(
-                        Word(term.lemma, term.lang_code)
-                    )
+                    if self.valid_ascendant(w := Word(term.lemma, term.lang_code)):
+                        links[Template.TO_LINK_MAPPING[tpl.type]].append(w)
         if lemma := self.redirects_to():
             links["redirects_to"] = [Word(lemma, self.lang.code)]
-        
+
+        if infl_match := re.search(
+            r"""
+            \{\{
+                (alternative\ form\ of
+                |
+                inflection\ of
+                |
+                alt\ form)
+                \|
+                (?P<lang>[^|]*)
+                \|
+                (?P<lemma>[^|}]*)
+                .*
+            \}\}
+            """,
+            self.meaning_wikitext,
+            flags=re.VERBOSE,
+        ):
+            links["inflection_of"] = [Word(infl_match["lemma"], self.lang.code)]
+
         return links
 
     NODE_STYLES = load_json("src/wiketym/data/styles.json")["nodes"]
@@ -103,11 +145,17 @@ class Word:
         text.append(f'<font point-size="10">{self.lang.name}</font>')
         if self.lemma:
             text.append(f"<b>{self.lemma}</b>")
+        if self.meaning:
+            text.append(
+                f"""<font point-size="10"><i>{"<br/>".join(textwrap.wrap(self.meaning, 30))}</i></font>"""
+            )
 
         node = {}
         node["label"] = "<" + "<br/>".join(text) + ">"
 
-        node['URL'] = f'"https://en.wiktionary.org/wiki/{self.page_title}#{self.lang.page_name.replace(" ", "_")}"'
+        node[
+            "URL"
+        ] = f'"https://en.wiktionary.org/wiki/{self.page_title}#{self.lang.page_name.replace(" ", "_")}"'
 
         if not self:
             node |= self.NODE_STYLES["invalid"]
@@ -122,3 +170,21 @@ class Word:
 
     def __repr__(self) -> str:
         return f"{self.lemma} ({self.lang.name})"
+
+    @classmethod
+    def is_meaning_section(cls, line: str) -> bool:
+        for title in cls.MEANING_NAMES:
+            if line.startswith(title):
+                return True
+
+    @property
+    def meaning(self):
+        if match := re.search(r"\# (.*)", self.meaning_wikitext):
+            meaning = match[1]
+        else:
+            meaning = ""
+        meaning = re.sub(r"\{\{l\|\w+?\|([^|]+)\}\} ?", lambda m: m[1], meaning)
+        meaning = re.sub(r"\{\{.+?\}\} ?", "", meaning)
+        meaning = meaning.replace(":", "")
+        meaning = re.sub(r"\[\[.*?([^|]+?)\]\]", lambda m: m[1], meaning)
+        return meaning

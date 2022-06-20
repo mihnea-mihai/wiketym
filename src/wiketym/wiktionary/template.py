@@ -36,7 +36,7 @@ class Template:
     class Type:
         INHERITED = {"inh", "inherited", "inh+"}
         BORROWED = {"bor", "borrowed", "bor+", "lbor"}
-        DERIVED = {"der", "derived", "der+"}
+        DERIVED = {"der", "derived", "der+", 'uder'}
         ROOT = {"root"}
         AFFIX = {"af", "affix", "vrd", "compound"}  # no compound and vrd
         SUFFIX = {"suf", "suffix"}
@@ -46,7 +46,7 @@ class Template:
         COGNATE = {"cog"}
         COMPOUND = {"com"}
         W = {"w"}
-        DIRECTIONAL = INHERITED | BORROWED | DERIVED | ROOT
+        DIRECTIONAL = INHERITED | BORROWED | DERIVED
         MULTIPLE = AFFIX | SUFFIX | PREFIX
         NONDIRECTIONAL = MENTION | LINK
         ALL = DIRECTIONAL | MULTIPLE | NONDIRECTIONAL
@@ -83,6 +83,9 @@ class Template:
         return [e.replace("~!~", "|") for e in text.split("|")]
 
     def _parse_params(self) -> list[Term]:
+        if self.type not in self.Type.ALL:
+            return []
+
         pos_params = [param for param in self.params if "=" not in param]
         key_params = [param for param in self.params if "=" in param]
         terms = []
@@ -96,6 +99,11 @@ class Template:
                 terms.append(Term(pos_params[0], lemma))
         elif self.type in Template.Type.W:
             terms = [Term(None, pos_params[0])]
+
+        if self.type in self.Type.SUFFIX:
+            lemma = terms[1].lemma
+            lemma = ('-' + lemma).replace('-*', '*-').replace('--', '-')
+            terms[1] = Term(pos_params[0], lemma)
 
         key_mappings = {"alt": "alt", "gloss": "t", "t": "t", "tr": "tr", "id": "id"}
         for key_param in key_params:

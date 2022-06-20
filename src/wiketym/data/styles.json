@@ -23,10 +23,10 @@
             "color": "purple"
         },
         "redirects_to": {
-            "arrowhead": "none"
+            "arrowhead": "curve"
         },
         "inflection_of": {
-            "arrowhead": "none"
+            "arrowhead": "inv"
         },
         "mentioned": {
             "arrowhead": "none"

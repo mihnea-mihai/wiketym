@@ -12,9 +12,9 @@ class Query:
         self,
         start_words: set[Word] = [],
         allowed_links: set[str] = ALL_LINKS,
-        max_level: int = 5,
+        max_level: int = 10,
         allow_invalid: bool = False,
-        max_count: int = 2,
+        max_count: int = 10,
         reduce: bool = True,
     ) -> None:
         self.start_words: str[Word] = start_words
@@ -31,15 +31,15 @@ class Query:
             word.level = 0
             self.G.add(word)
 
-        next_future_words = start_words
+        future_words = start_words
         level = 0  # will be incremented
-        while (future_words := next_future_words) and (
+        while (current_words := future_words) and (
             (level := level + 1) <= max_level
         ):
-            next_future_words = set()
-            for word in future_words:
+            future_words = set()
+            for current_word in current_words:
                 related_count = 0
-                for link_type, related_words in word.links.items():
+                for link_type, related_words in current_word.links.items():
                     if related_count >= max_count:
                         break
                     if link_type in {'mentioned', 'linked'} and related_count:
@@ -49,12 +49,13 @@ class Query:
                             if related_count >= max_count:
                                 break
                             if allow_invalid or related_word:
+                                related_count += 1
                                 if related_word not in self.handled_words:
-                                    related_count += 1
-                                    next_future_words.add(related_word)
+                                    print('added', related_word, 'to', current_word, related_count)
+                                    future_words.add(related_word)
                                     self.G.add(related_word)
-                                self.G.link(related_word, word, link_type)
-                self.handled_words.add(word)
+                                self.G.link(related_word, current_word, link_type)
+                self.handled_words.add(current_word)
         # filename = secure_filename(f"{lemma}_{lang_code}.pdf") or "file.pdf"
         if reduce:
             self.G.reduce().render(f"test")

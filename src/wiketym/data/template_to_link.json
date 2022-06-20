@@ -12,5 +12,7 @@
     "m+": "mentioned",
     "l": "linked",
     "l+": "linked",
-    "bor+": "borrowed_from"
+    "bor+": "borrowed_from",
+    "uder": "derived_from",
+    "inh+": "inherited_from"
 }
