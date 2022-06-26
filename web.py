@@ -8,30 +8,43 @@ from src.wiketym.word import Word
 
 app = Flask(__name__)
 
+PREF_LANGS = ["en", "ro", "de", "la", "fr", "es"]
+
 
 @app.route("/")
 def my_form():
     return render_template(
         "request.html",
         languages=[
+            {"code": lang_code, "name": lang_object.name}
+            for lang_code, lang_object in {
+                code: Language(code) for code in PREF_LANGS
+            }.items()
+        ]
+        + [
             {"code": lang_code, "name": lang_object["name"]}
             for lang_code, lang_object in Language.lang_data.items()
-            if len(lang_code) < 3
+            if len(lang_code) < 3 and lang_code not in PREF_LANGS
         ],
     )
 
 
 @app.route("/generate", methods=["GET"])
-def my_form_post():
-    word1 = Word(request.args['lemma1'], request.args['lang_code1'])
-    word2 = Word(request.args['lemma2'], request.args['lang_code2'])
-    word_list = [word1, word2] if word2 else [word1]
+def generate():
+
+    lemmas = [v for k, v in request.args.items() if k.startswith("lemma")]
+    lang_codes = [v for k, v in request.args.items() if k.startswith("lang_code")]
+
+    word_list = [
+        Word(lemmas[i], lang_codes[i]) for i in range(len(lemmas)) if lemmas[i]
+    ]
+    print(word_list)
     Query(
         word_list,
         allow_invalid=(request.args["allow_invalid"] == "show"),
-        max_level=int(request.args['max_level']),
-        max_count=int(request.args['max_count']),
-        reduce=request.args['reduce'] == 'true'
+        max_level=int(request.args["max_level"]),
+        max_count=int(request.args["max_count"]),
+        reduce=request.args["reduce"] == "true",
     )
     return send_file("outputs/test.pdf", as_attachment=False)
 

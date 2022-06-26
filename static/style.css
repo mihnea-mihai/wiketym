@@ -1,7 +1,35 @@
 :root {
     --black-background: #212121;
+    --black-panel: #262626;
     --white-text: #fafafa;
-    font-size: larger;
+    --gray-border: #4d4d4d;
+    font-size: x-large;
+}
+
+.word {
+    padding: 1vh 1vw;
+    max-width: 20rem;
+    
+}
+
+details {
+    padding: 1vh 1vw;
+    max-width: 25em;
+}
+
+
+.word,
+.word>div,
+.word>div>*,
+details,
+.setting,
+.setting>*,
+input[type=submit]{
+    margin: 1vh auto 1vh;
+}
+
+summary {
+    cursor: pointer;
 }
 
 body {
@@ -9,18 +37,52 @@ body {
     color: var(--white-text);
     text-align: center;
 }
+
 input, select {
-    margin-bottom: 2em;
     font-size: 1em;
-    max-width: 80%;
 }
+
 input[type=submit] {
-    height: 2rem;
-    width: 6rem;
-    /* font-size: x-large; */
+    padding: 1vh 1vw;
 }
+
+
+input[type="number"] {
+    max-width: 3em;
+}
+
+
 form {
-    padding-top: 2em;
+    padding: 3vh 1vw;
 }
 
 
+#words {
+    display: flex;
+    flex-direction: row;
+    margin: auto;
+    width: fit-content;
+    flex-wrap: wrap;
+}
+
+
+
+div.word {
+    margin-right: 1vw;
+    margin-left: 1vw;
+}
+
+button#add-word {
+    font-size: x-large;
+    height: fit-content;
+    margin: auto 0;
+}
+
+details, .word {
+    background-color: var(--black-panel);
+    border: var(--gray-border) 1px solid;
+}
+
+label:not(.option) {
+    display: block;
+}

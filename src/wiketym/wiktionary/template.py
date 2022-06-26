@@ -39,6 +39,7 @@ class Template:
         DERIVED = {"der", "derived", "der+", 'uder'}
         ROOT = {"root"}
         AFFIX = {"af", "affix", "vrd", "compound"}  # no compound and vrd
+        CONFIX = {"confix"}
         SUFFIX = {"suf", "suffix"}
         PREFIX = {"prefix"}
         MENTION = {"m", "mention", "back-form", "m+"}  # no backform
@@ -47,7 +48,7 @@ class Template:
         COMPOUND = {"com"}
         W = {"w"}
         DIRECTIONAL = INHERITED | BORROWED | DERIVED | ROOT
-        MULTIPLE = AFFIX | SUFFIX | PREFIX
+        MULTIPLE = AFFIX | SUFFIX | PREFIX | CONFIX
         NONDIRECTIONAL = MENTION | LINK
         ALL = DIRECTIONAL | MULTIPLE | NONDIRECTIONAL | W | ROOT
 

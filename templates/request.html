@@ -2,54 +2,73 @@
 <html>
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <title>Wiketym - Generate new</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+	<script src="{{ url_for('static', filename='script.js') }}"></script>
+	<title>Wiketym - Generate new</title>
 </head>
 
 <body>
-    <form action="/generate" method="GET" target="_blank">
-        <label for="lemma1">Word</label><br>
-        <input name="lemma1"><br>
+	<form action="/generate" method="GET" target="_blank">
+		<div id="words">
+			<div class="word" oncontextmenu="clearWord(this)">
+				<!-- <button type="button">❌</button> -->
+				<div class="lemma">
+					<label for="lemma1">Word</label>
+					<input name="lemma1">
+				</div>
+				<div class="language">
+					<label for="lang_code1">Language</label>
+					<select name="lang_code1">
+						{%- for lang in languages %}
+						<option value="{{lang.code}}">{{lang.name}}</option>
+						{% endfor -%}
+					</select>
+				</div>
+			</div>
+			<button type="button" id="add-word" onclick="addWord()">➕</button>
+		</div>
 
-        <label for="lang_code1">Language</label><br>
-        <select name="lang_code1">
-            {% for lang in languages %}
-            <option value="{{lang.code}}">{{lang.name}}</option>
-            {% endfor %}
-        </select><br>
 
-        <label for="lemma2">Word</label><br>
-        <input name="lemma2"><br>
 
-        <label for="lang_code2">Language</label><br>
-        <select name="lang_code2">
-            {% for lang in languages %}
-            <option value="{{lang.code}}">{{lang.name}}</option>
-            {% endfor %}
-        </select><br>
 
-        <label for="show-invalid">Show</label>
-        <input type="radio" name="allow_invalid" value="show" id="show-invalid">
-        <label for="hide-invalid">Hide</label>
-        <input type="radio" name="allow_invalid" value="hide" id="hide-invalid" checked>
-        <br>
-        <label for="max_level">Maximum distance form origin word</label>
-        <input type="number" name="max_level" value="5" min="1" max="23">
-        <br>
-        <label for="max_count">Maximum upwards connections per word</label>
-        <input type="number" name="max_count" value="2" min="1" max="10">
-        <br>
+		<details open>
+			<summary>Advanced parameters</summary>
 
-        <label for="do-reduce">Reduce</label>
-        <input type="radio" name="reduce" value="true" id="do-reduce" checked>
-        <label for="dont-reduce">Keep</label>
-        <input type="radio" name="reduce" value="false" id="dont-reduce">
-        <br>
+			<div class="setting">
+				<label for="max_level">Maximum distance form origin word</label>
+				<input type="number" name="max_level" value="10" min="1" max="23">
+			</div>
 
-        <input type="submit" value="Generate">
-    </form>
+			<div class="setting">
+				<label for="max_count">Maximum upwards connections per word</label>
+				<input type="number" name="max_count" value="10" min="1" max="10">
+			</div>
+
+			<div class="setting">
+				<label for="allow_invalid">Show or hide invalid entries</label>
+				<label class="option" for="show-invalid">Show</label>
+				<input type="radio" name="allow_invalid" value="show" id="show-invalid">
+				<label class="option" for="hide-invalid">Hide</label>
+				<input type="radio" name="allow_invalid" value="hide" id="hide-invalid" checked>
+			</div>
+
+			<div class="setting">
+				<label for="reduce">Remove superfluous connections</label>
+				<label class="option" for="dont-reduce">Keep</label>
+				<input type="radio" name="reduce" value="false" id="dont-reduce">
+				<label class="option" for="do-reduce">Reduce</label>
+				<input type="radio" name="reduce" value="true" id="do-reduce" checked>
+			</div>
+
+		</details>
+
+
+
+
+		<input type="submit" value="Generate">
+	</form>
 </body>
 
 </html>
