@@ -9,11 +9,11 @@
 	<title>Wiketym - Generate new</title>
 </head>
 
-<body>
-	<form action="/generate" method="GET" target="_blank">
+<body class="single">
+	<form action="/generate" method="GET" target="preview-iframe">
 		<div id="words">
 			<div class="word" oncontextmenu="clearWord(this)">
-				<!-- <button type="button">❌</button> -->
+
 				<div class="lemma">
 					<label for="lemma1">Word</label>
 					<input name="lemma1">
@@ -27,13 +27,13 @@
 					</select>
 				</div>
 			</div>
-			<button type="button" id="add-word" onclick="addWord()">➕</button>
+			<div id="word-buttons">
+				<button type="button" id="add-word" onclick="addWord()">➕</button>
+				<button type="button" id="del-word" onclick="removeWord()" disabled>❌</button>
+			</div>
 		</div>
 
-
-
-
-		<details open>
+		<details>
 			<summary>Advanced parameters</summary>
 
 			<div class="setting">
@@ -47,28 +47,28 @@
 			</div>
 
 			<div class="setting">
-				<label for="allow_invalid">Show or hide invalid entries</label>
-				<label class="option" for="show-invalid">Show</label>
-				<input type="radio" name="allow_invalid" value="show" id="show-invalid">
-				<label class="option" for="hide-invalid">Hide</label>
-				<input type="radio" name="allow_invalid" value="hide" id="hide-invalid" checked>
+				<input id="show-invalid" name="show_invalid" type="checkbox" checked>
+				<label for="show-invalid">Show invalid entries</label>
 			</div>
 
 			<div class="setting">
+				<input id="reduce" name="reduce" type="checkbox" checked>
 				<label for="reduce">Remove superfluous connections</label>
-				<label class="option" for="dont-reduce">Keep</label>
-				<input type="radio" name="reduce" value="false" id="dont-reduce">
-				<label class="option" for="do-reduce">Reduce</label>
-				<input type="radio" name="reduce" value="true" id="do-reduce" checked>
+			</div>
+
+			<div class="setting">
+				<input id="preview" type="checkbox" onclick="togglePreview()">
+				<label for="preview">Preview to the side</label>
 			</div>
 
 		</details>
 
 
+		<input id="generate" type="submit" value="Generate">
 
 
-		<input type="submit" value="Generate">
 	</form>
+	<iframe name="preview-iframe"></iframe>
 </body>
 
 </html>

@@ -35,8 +35,33 @@ summary {
 body {
     background-color: var(--black-background);
     color: var(--white-text);
-    text-align: center;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    /* height: 95vh; */
+    justify-content: center;
+    align-items: center;
 }
+
+/* .submit {
+    justify-content: ;
+} */
+
+body.split>form {
+    flex: 0 0 25em;
+}
+
+body.split>iframe {
+    flex: 1 1 15em;
+    min-height: 95vh;
+    height: 100%;
+}
+
+body.single>iframe {
+    width: 0;
+    display: none;
+}
+
 
 input, select {
     font-size: 1em;
@@ -54,6 +79,13 @@ input[type="number"] {
 
 form {
     padding: 3vh 1vw;
+    text-align: center;
+}
+
+
+
+form>* {
+    text-align: initial;
 }
 
 
@@ -63,18 +95,30 @@ form {
     margin: auto;
     width: fit-content;
     flex-wrap: wrap;
+    justify-content: center;
 }
 
-
+#generate {
+    margin: 1vh auto;
+/*     text-align: center; */
+}
 
 div.word {
     margin-right: 1vw;
     margin-left: 1vw;
 }
 
-button#add-word {
+button#add-word,
+button#del-word {
     font-size: x-large;
     height: fit-content;
+    margin: 1em;
+    display: block;
+}
+
+
+
+div#word-buttons {
     margin: auto 0;
 }
 
@@ -83,6 +127,6 @@ details, .word {
     border: var(--gray-border) 1px solid;
 }
 
-label:not(.option) {
-    display: block;
+label {
+    font-size: smaller;
 }

@@ -15,5 +15,6 @@
     "bor+": "borrowed_from",
     "uder": "derived_from",
     "inh+": "inherited_from",
-    "confix": "internally_from"
+    "confix": "internally_from",
+    "compound": "internally_from"
 }
