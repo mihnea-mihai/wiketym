@@ -42,7 +42,6 @@ function addWord() {
 
     index = wordList.length;
     newWord = wordList[0].cloneNode(true);
-    addButton = words.querySelector('#add-word');
 
     lemma = newWord.querySelector('.lemma');
     lemma.querySelector('label')
@@ -56,9 +55,29 @@ function addWord() {
     language.querySelector('select')
         .setAttribute('name', 'lang_code' + String(index));
 
-    words.insertBefore(newWord, addButton);
+    words.insertBefore(newWord, document.getElementById('word-buttons'));
+    document.getElementById('del-word').removeAttribute('disabled')
 }
 
-function clearWord(word) {
-    console.log(word)
+function removeWord() {
+    words = document.getElementsByClassName('word')
+    wordDiv = document.getElementById('words')
+    wordDiv.removeChild(words[words.length - 1])
+    if (words.length <= 1) {
+        document.getElementById('del-word').setAttribute('disabled', true)
+    }
+    console.log(words.length)
+}
+
+function togglePreview() {
+    body = document.getElementsByTagName('body')[0]
+    form = document.getElementsByTagName('form')[0]
+    if (document.getElementById('preview').checked) {
+        body.className = 'split'
+        form.setAttribute('target', 'preview-iframe')
+    }
+    else {
+        body.className = 'single'
+        form.setAttribute('target', '_blank')
+    }
 }

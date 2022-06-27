@@ -39,14 +39,14 @@ def generate():
         Word(lemmas[i], lang_codes[i]) for i in range(len(lemmas)) if lemmas[i]
     ]
     print(word_list)
-    Query(
+    q = Query(
         word_list,
-        allow_invalid=(request.args["allow_invalid"] == "show"),
+        allow_invalid=request.args.get("show_invalid"),
         max_level=int(request.args["max_level"]),
         max_count=int(request.args["max_count"]),
-        reduce=request.args["reduce"] == "true",
+        reduce=request.args.get("reduce"),
     )
-    return send_file("outputs/test.pdf", as_attachment=False)
+    return send_file(f"outputs/{q.filename}.pdf", as_attachment=False)
 
 
 if __name__ == "__main__":
