@@ -20,6 +20,7 @@ class Word:
         "Proper noun",
         "Suffix",
         "Prefix",
+        "Root",
     }
 
     @cache
@@ -81,7 +82,7 @@ class Word:
         # Strip accents according to language
         if self.lang.diacr:
             nkfd_form = unicodedata.normalize("NFKD", title)
-            if not self.lang.code == "grc":
+            if not self.lang.page_name == 'Ancient Greek':
                 title = "".join(c for c in nkfd_form if not unicodedata.combining(c))
             else:  # Special case for Greek incomplete stripping
                 title = "".join(
@@ -144,7 +145,7 @@ class Word:
         text = []
         text.append(f'<font point-size="10">{self.lang.name}</font>')
         if self.lemma:
-            text.append(f"<b>{self.lemma}</b>")
+            text.append(f'<b><font point-size="16">{self.lemma}</font></b>')
         if self.meaning:
             text.append(
                 f"""<font point-size="10"><i>{"<br/>".join(textwrap.wrap(self.meaning, 30))}</i></font>"""
@@ -157,11 +158,16 @@ class Word:
             "URL"
         ] = f'"https://en.wiktionary.org/wiki/{self.page_title}#{self.lang.page_name.replace(" ", "_")}"'
 
+
+        node['margin'] = '0.05'
+
         if not self:
             node |= self.NODE_STYLES["invalid"]
 
         if self.level == 0:
             node |= self.NODE_STYLES["start"]
+
+        node['shape'] = 'none'
 
         return node
 
@@ -179,12 +185,15 @@ class Word:
 
     @property
     def meaning(self):
+        if self.lang.code == 'en':
+            return ''
         if match := re.search(r"\# (.*)", self.meaning_wikitext):
             meaning = match[1]
         else:
             meaning = ""
         meaning = re.sub(r"\{\{l\|\w+?\|([^|]+)\}\} ?", lambda m: m[1], meaning)
         meaning = re.sub(r"\{\{.+?\}\} ?", "", meaning)
+        meaning = re.sub(r"<.+?> ?", "", meaning)
         meaning = meaning.replace(":", "")
         meaning = re.sub(r"\[\[.*?([^|]+?)\]\]", lambda m: m[1], meaning)
         return meaning

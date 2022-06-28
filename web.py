@@ -1,7 +1,4 @@
 from flask import Flask, request, render_template, send_file
-
-# from werkzeug.utils import secure_filename
-
 from src.wiketym.wiktionary.language import Language
 from src.wiketym.query import Query
 from src.wiketym.word import Word
@@ -38,13 +35,13 @@ def generate():
     word_list = [
         Word(lemmas[i], lang_codes[i]) for i in range(len(lemmas)) if lemmas[i]
     ]
-    print(word_list)
     q = Query(
         word_list,
         allow_invalid=request.args.get("show_invalid"),
         max_level=int(request.args["max_level"]),
         max_count=int(request.args["max_count"]),
         reduce=request.args.get("reduce"),
+        ignore_affixes=request.args.get("ignore_affixes"),
     )
     return send_file(f"outputs/{q.filename}.pdf", as_attachment=False)
 
