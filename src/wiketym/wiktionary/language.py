@@ -31,7 +31,7 @@ class Language:
         (e.g. `Latin` as opposed to `Vulgar Latin`)."""
         self.diacr = lang_obj["diacr"]
         """Whether or not diacritics should be stripped."""
-        self.pro = lang_obj["pro"]
+        self.pro: bool = lang_obj["pro"]
         """Whether or not this is a reconstruction language."""
         self.code = code
         """Language code."""

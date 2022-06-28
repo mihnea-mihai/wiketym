@@ -14,13 +14,16 @@
     },
     "edges": {
         "inherited_from": {
-            "color": "green"
+            "color": "green",
+            "fontcolor": "green"
         },
         "borrowed_from": {
-            "color": "red"
+            "color": "red",
+            "fontcolor": "red"
         },
         "derived_from": {
-            "color": "purple"
+            "color": "purple",
+            "fontcolor": "purple"
         },
         "redirects_to": {
             "arrowhead": "curve"
@@ -29,13 +32,16 @@
             "arrowhead": "inv"
         },
         "mentioned": {
-            "arrowhead": "none"
+            "arrowhead": "none",
+            "style": "dotted"
         },
         "linked": {
-            "arrowhead": "none"
+            "arrowhead": "none",
+            "style": "dashed"
         },
         "internally_from": {
-            "color": "blue"
+            "color": "blue",
+            "fontcolor": "blue"
         }
     }
 }

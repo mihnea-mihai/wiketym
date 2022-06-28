@@ -16,5 +16,6 @@
     "uder": "derived_from",
     "inh+": "inherited_from",
     "confix": "internally_from",
-    "compound": "internally_from"
+    "compound": "internally_from",
+    "derived": "derived_from"
 }

@@ -46,8 +46,9 @@ function addWord() {
     lemma = newWord.querySelector('.lemma');
     lemma.querySelector('label')
         .setAttribute('for', 'lemma' + String(index));
-    lemma.querySelector('input')
-        .setAttribute('name', 'lemma' + String(index));
+    lemmaInput = lemma.querySelector('input')
+    lemmaInput.setAttribute('name', 'lemma' + String(index));
+    lemmaInput.value = ''
 
     language = newWord.querySelector('.language');
     language.querySelector('label')
@@ -66,7 +67,6 @@ function removeWord() {
     if (words.length <= 1) {
         document.getElementById('del-word').setAttribute('disabled', true)
     }
-    console.log(words.length)
 }
 
 function togglePreview() {

@@ -10,7 +10,7 @@
 </head>
 
 <body class="single">
-	<form action="/generate" method="GET" target="preview-iframe">
+	<form action="/generate" method="GET" target="_blank">
 		<div id="words">
 			<div class="word" oncontextmenu="clearWord(this)">
 
@@ -38,22 +38,27 @@
 
 			<div class="setting">
 				<label for="max_level">Maximum distance form origin word</label>
-				<input type="number" name="max_level" value="10" min="1" max="23">
+				<input type="number" name="max_level" value="10" min="1" max="15">
 			</div>
 
 			<div class="setting">
 				<label for="max_count">Maximum upwards connections per word</label>
-				<input type="number" name="max_count" value="10" min="1" max="10">
+				<input type="number" name="max_count" value="7" min="1" max="10">
 			</div>
 
 			<div class="setting">
-				<input id="show-invalid" name="show_invalid" type="checkbox" checked>
+				<input id="show-invalid" name="show_invalid" type="checkbox">
 				<label for="show-invalid">Show invalid entries</label>
 			</div>
 
 			<div class="setting">
 				<input id="reduce" name="reduce" type="checkbox" checked>
 				<label for="reduce">Remove superfluous connections</label>
+			</div>
+
+			<div class="setting">
+				<input id="ignore-affixes" name="ignore_affixes" type="checkbox" checked>
+				<label for="ignore-affixes">Do not expand affix etymologies</label>
 			</div>
 
 			<div class="setting">
