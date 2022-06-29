@@ -37,6 +37,7 @@ class Template:
         INHERITED = {"inh", "inherited", "inh+"}
         BORROWED = {"bor", "borrowed", "bor+", "lbor"}
         DERIVED = {"der", "derived", "der+", 'uder'}
+        BACKFORM = {'back-form', 'bf'}
         ROOT = {"root"}
         AFFIX = {"af", "affix", "vrd", "compound"}  # no compound and vrd
         CONFIX = {"confix"}
@@ -47,10 +48,10 @@ class Template:
         COGNATE = {"cog"}
         COMPOUND = {"com"}
         W = {"w"}
-        DIRECTIONAL = INHERITED | BORROWED | DERIVED | ROOT
-        MULTIPLE = AFFIX | SUFFIX | PREFIX | CONFIX
+        DIRECTIONAL = INHERITED | BORROWED | DERIVED  | BACKFORM
+        MULTIPLE = AFFIX | SUFFIX | PREFIX | CONFIX | ROOT
         NONDIRECTIONAL = MENTION | LINK
-        ALL = DIRECTIONAL | MULTIPLE | NONDIRECTIONAL | W | ROOT
+        ALL = DIRECTIONAL | MULTIPLE | NONDIRECTIONAL | W
 
     TO_LINK_MAPPING = load_json("src/wiketym/data/template_to_link.json")
 

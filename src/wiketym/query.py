@@ -46,7 +46,8 @@ class Query:
                         break
                     for related_word in related_words:
                         if current_word.lang.pro and not related_word.lang.pro:
-                            continue
+                            if link_type in {"mentioned", "linked"}:
+                                continue
                         if ignore_affixes:
                             wk = current_word.entry.wikitext
                             if "==Suffix==" in wk or "==Prefix==" in wk:

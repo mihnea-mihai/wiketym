@@ -17,5 +17,7 @@
     "inh+": "inherited_from",
     "confix": "internally_from",
     "compound": "internally_from",
-    "derived": "derived_from"
+    "derived": "derived_from",
+    "back-form": "internally_from",
+    "bf": "internally_from"
 }

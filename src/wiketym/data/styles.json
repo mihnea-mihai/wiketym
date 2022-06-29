@@ -26,7 +26,8 @@
             "fontcolor": "purple"
         },
         "redirects_to": {
-            "arrowhead": "curve"
+            "arrowhead": "crow",
+            "arrowtail": "crow"
         },
         "inflection_of": {
             "arrowhead": "inv"
