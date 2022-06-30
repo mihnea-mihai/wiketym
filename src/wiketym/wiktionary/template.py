@@ -37,6 +37,7 @@ class Template:
         INHERITED = {"inh", "inherited", "inh+"}
         BORROWED = {"bor", "borrowed", "bor+", "lbor"}
         DERIVED = {"der", "derived", "der+", 'uder'}
+        BACKFORM = {'back-form', 'bf'}
         ROOT = {"root"}
         AFFIX = {"af", "affix", "vrd", "compound"}  # no compound and vrd
         CONFIX = {"confix"}
@@ -47,7 +48,7 @@ class Template:
         COGNATE = {"cog"}
         COMPOUND = {"com"}
         W = {"w"}
-        DIRECTIONAL = INHERITED | BORROWED | DERIVED | ROOT
+        DIRECTIONAL = INHERITED | BORROWED | DERIVED  | BACKFORM
         MULTIPLE = AFFIX | SUFFIX | PREFIX | CONFIX
         NONDIRECTIONAL = MENTION | LINK
         ALL = DIRECTIONAL | MULTIPLE | NONDIRECTIONAL | W | ROOT
@@ -95,6 +96,9 @@ class Template:
             terms = [Term(*pos_params)]
         elif self.type in Template.Type.DIRECTIONAL:
             terms = [Term(*pos_params[1:])]
+        elif self.type in Template.Type.ROOT:
+            for lemma in pos_params[2:]:
+                terms.append(Term(pos_params[1], lemma))
         elif self.type in Template.Type.MULTIPLE:
             for lemma in pos_params[1:]:  # exclude language
                 terms.append(Term(pos_params[0], lemma))

@@ -6,7 +6,7 @@ import re
 import unicodedata
 from functools import cache, cached_property
 
-from .helpers import load_json
+from .helpers import get, load_json
 from .wiktionary import Language, Page, Section, Template
 
 
@@ -56,19 +56,47 @@ class Word:
         # self._ensure_redirect()
 
         # self._populate_links(Template.Type.ALL)
-        if self.redirects_to():
+        if self.redirects_to() or self.equivalent_to() or self.accents_stripped_from():
             self.entry.wikitext = " "
 
         self.meaning_wikitext: str = self.entry.get(
             line=self.is_meaning_section
         ).wikitext
 
-    def redirects_to(self) -> str:
+        self._template_meaning = ''
+        self.translit = ''
+
+    def redirects_to(self) -> str | None:
         if match := re.match(r"#REDIRECT \[\[(.+)\]\]", self.page.wikitext):
             lemma = match[1]
             if "/" in lemma:
                 lemma = "*" + lemma.split("/", maxsplit=1)[1]
             return lemma
+
+    def equivalent_to(self) -> Word | None:
+        if self.lang.name != self.lang.page_name:
+            for lang_code, data in Language.lang_data.items():
+                if data["name"] == self.lang.page_name:
+                    return Word(self.lemma, lang_code)
+
+    def accents_stripped_from(self) -> Word | None:
+        if self.lang.diacr:
+            if self.stripped_lemma != self.lemma:
+                return Word(self.stripped_lemma, self.lang.code)
+
+    @property
+    def stripped_lemma(self):
+        lemma = self.lemma
+        nkfd_form = unicodedata.normalize("NFKD", lemma)
+        if self.lang.page_name != "Ancient Greek":
+            lemma = "".join(c for c in nkfd_form if not unicodedata.combining(c))
+        else:  # Special case for Greek incomplete stripping
+            lemma = "".join(
+                c for c in nkfd_form if not unicodedata.name(c) == "COMBINING MACRON"
+            )
+        # Normalise back to ensure equality
+        lemma = unicodedata.normalize("NFKC", lemma)
+        return lemma
 
     @property
     def page_title(self):
@@ -78,25 +106,8 @@ class Word:
         - stripping accents when necessary according to the language
         - applying the page naming conventions for reconstrcuted lemmas
         """
-        title = self.lemma
-        # Strip accents according to language
-        if self.lang.diacr:
-            nkfd_form = unicodedata.normalize("NFKD", title)
-            if not self.lang.page_name == 'Ancient Greek':
-                title = "".join(c for c in nkfd_form if not unicodedata.combining(c))
-            else:  # Special case for Greek incomplete stripping
-                title = "".join(
-                    c
-                    for c in nkfd_form
-                    if not unicodedata.name(c) == "COMBINING MACRON"
-                )
-                # Normalise back to ensure equality
-                title = unicodedata.normalize("NFKC", title)
-        self.lemma = title
         # Change page title for reconstructed lemmas
-        title = title.replace("*", f"Reconstruction:{self.lang.page_name}/")
-
-        return title
+        return self.lemma.replace("*", f"Reconstruction:{self.lang.page_name}/")
 
     def valid_ascendant(self, word: Word) -> bool:
         if "==Suffix==" in self.meaning_wikitext:
@@ -112,9 +123,16 @@ class Word:
             if tpl.type in Template.TO_LINK_MAPPING:
                 for term in tpl.terms:
                     if self.valid_ascendant(w := Word(term.lemma, term.lang_code)):
+                        w.translit = term.tr
+                        w._template_meaning = term.t
                         links[Template.TO_LINK_MAPPING[tpl.type]].append(w)
+
         if lemma := self.redirects_to():
             links["redirects_to"] = [Word(lemma, self.lang.code)]
+        if word := self.equivalent_to():
+            links["redirects_to"] = [word]
+        if word := self.accents_stripped_from():
+            links["redirects_to"] = [word]
 
         if infl_match := re.search(
             r"""
@@ -146,10 +164,13 @@ class Word:
         text.append(f'<font point-size="10">{self.lang.name}</font>')
         if self.lemma:
             text.append(f'<b><font point-size="16">{self.lemma}</font></b>')
+        if self.translit:
+            text.append(f'<b><font point-size="10">{self.translit}</font></b>')
         if self.meaning:
             text.append(
                 f"""<font point-size="10"><i>{"<br/>".join(textwrap.wrap(self.meaning, 30))}</i></font>"""
             )
+
 
         node = {}
         node["label"] = "<" + "<br/>".join(text) + ">"
@@ -158,8 +179,7 @@ class Word:
             "URL"
         ] = f'"https://en.wiktionary.org/wiki/{self.page_title}#{self.lang.page_name.replace(" ", "_")}"'
 
-
-        node['margin'] = '0.05'
+        node["margin"] = "0.05"
 
         if not self:
             node |= self.NODE_STYLES["invalid"]
@@ -167,7 +187,7 @@ class Word:
         if self.level == 0:
             node |= self.NODE_STYLES["start"]
 
-        node['shape'] = 'none'
+        node["shape"] = "none"
 
         return node
 
@@ -185,8 +205,11 @@ class Word:
 
     @property
     def meaning(self):
-        if self.lang.code == 'en':
-            return ''
+        if self.lang.code == "en":
+            return ""
+        if self._template_meaning:
+            return self._template_meaning
+
         if match := re.search(r"\# (.*)", self.meaning_wikitext):
             meaning = match[1]
         else:

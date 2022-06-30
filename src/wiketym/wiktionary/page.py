@@ -40,9 +40,9 @@ class Page:
 
     def __getitem__(self, lang: Language | str) -> wkt.Section:
         if isinstance(lang, Language):
-            return get(self, line=lang.page_name, __default=wkt.Section())
+            return get(self, line=lang.name, __default=wkt.Section())
         else:
-            return get(self, line=Language(lang).page_name, __default=wkt.Section())
+            return get(self, line=Language(lang).name, __default=wkt.Section())
 
     def __repr__(self) -> str:
         return f"Page({self.title})"

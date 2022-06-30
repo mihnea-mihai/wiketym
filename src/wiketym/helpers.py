@@ -2,6 +2,7 @@
 Utilities.
 """
 
+import unicodedata
 import json
 from typing import Any, Iterable, Iterator, Type
 

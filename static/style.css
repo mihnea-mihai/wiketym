@@ -53,7 +53,7 @@ body.split>form {
 
 body.split>iframe {
     flex: 1 1 15em;
-    min-height: 95vh;
+    min-height: 97.5vh;
     height: 100%;
     margin: auto 0 0 0;
 }

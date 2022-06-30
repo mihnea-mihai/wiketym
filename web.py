@@ -40,8 +40,8 @@ def generate():
         allow_invalid=request.args.get("show_invalid"),
         max_level=int(request.args["max_level"]),
         max_count=int(request.args["max_count"]),
-        reduce=request.args.get("reduce"),
-        ignore_affixes=request.args.get("ignore_affixes"),
+        reduce=not request.args.get("all_connections"),
+        ignore_affixes=not request.args.get("expand_affixes"),
     )
     return send_file(f"outputs/{q.filename}.pdf", as_attachment=False)
 
