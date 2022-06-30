@@ -49,9 +49,9 @@ class Template:
         COMPOUND = {"com"}
         W = {"w"}
         DIRECTIONAL = INHERITED | BORROWED | DERIVED  | BACKFORM
-        MULTIPLE = AFFIX | SUFFIX | PREFIX | CONFIX | ROOT
+        MULTIPLE = AFFIX | SUFFIX | PREFIX | CONFIX
         NONDIRECTIONAL = MENTION | LINK
-        ALL = DIRECTIONAL | MULTIPLE | NONDIRECTIONAL | W
+        ALL = DIRECTIONAL | MULTIPLE | NONDIRECTIONAL | W | ROOT
 
     TO_LINK_MAPPING = load_json("src/wiketym/data/template_to_link.json")
 
@@ -96,6 +96,9 @@ class Template:
             terms = [Term(*pos_params)]
         elif self.type in Template.Type.DIRECTIONAL:
             terms = [Term(*pos_params[1:])]
+        elif self.type in Template.Type.ROOT:
+            for lemma in pos_params[2:]:
+                terms.append(Term(pos_params[1], lemma))
         elif self.type in Template.Type.MULTIPLE:
             for lemma in pos_params[1:]:  # exclude language
                 terms.append(Term(pos_params[0], lemma))
