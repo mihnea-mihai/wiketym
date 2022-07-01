@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-import textwrap
-
 import re
+import textwrap
 import unicodedata
 from functools import cache, cached_property
 
-from .helpers import get, load_json
+
+from .helpers import get, load_json, nlp
 from .wiktionary import Language, Page, Section, Template
 
 
@@ -41,10 +41,16 @@ class Word:
         self.entry: Section = self.page[self.lang]
         """Wikipedia Page Section corresponding to this word."""
 
-        self.templates: list[Template] = Template.parse_all(
-            self.entry.get(line=lambda x: x.startswith("Etymology")).strict_wikitext
+        self.meaning_section: Section = self.entry.get(line=self.is_meaning_section)
+
+        self.etymology_section: Section = self.entry.get(
+            line=lambda x: x.startswith("Etymology")
         )
-        """List of all parsed templates in the Etymology section wikitext."""
+
+        # self.templates: list[Template] = Template.parse_all(
+        #     self.entry.get(line=lambda x: x.startswith("Etymology")).strict_wikitext
+        # )
+        # """List of all parsed templates in the Etymology section wikitext."""
 
         self.level = None
         """Distance from this word to one of the original words in the query."""
@@ -59,12 +65,13 @@ class Word:
         if self.redirects_to() or self.equivalent_to() or self.accents_stripped_from():
             self.entry.wikitext = " "
 
-        self.meaning_wikitext: str = self.entry.get(
-            line=self.is_meaning_section
-        ).wikitext
+        # self.meaning_wikitext: str = self.entry.get(
+        #     line=self.is_meaning_section
+        # ).wikitext
 
-        self._template_meaning = ''
-        self.translit = ''
+        self._template_meaning = ""
+        self._reference_meaning = ""
+        self.translit = ""
 
     def redirects_to(self) -> str | None:
         if match := re.match(r"#REDIRECT \[\[(.+)\]\]", self.page.wikitext):
@@ -92,7 +99,9 @@ class Word:
             lemma = "".join(c for c in nkfd_form if not unicodedata.combining(c))
         else:  # Special case for Greek incomplete stripping
             lemma = "".join(
-                c for c in nkfd_form if not unicodedata.name(c) == "COMBINING MACRON"
+                c
+                for c in nkfd_form
+                if unicodedata.name(c) not in {"COMBINING MACRON", "COMBINING BREVE"}
             )
         # Normalise back to ensure equality
         lemma = unicodedata.normalize("NFKC", lemma)
@@ -109,6 +118,10 @@ class Word:
         # Change page title for reconstructed lemmas
         return self.lemma.replace("*", f"Reconstruction:{self.lang.page_name}/")
 
+    @property
+    def meaning_wikitext(self):
+        return self.meaning_section.wikitext
+
     def valid_ascendant(self, word: Word) -> bool:
         if "==Suffix==" in self.meaning_wikitext:
             if "==Suffix==" not in word.meaning_wikitext:
@@ -119,7 +132,7 @@ class Word:
     def links(self) -> dict[str, list[Word]]:
         links: dict[str, list[Word]] = load_json("src/wiketym/data/link_types.json")
 
-        for tpl in self.templates:
+        for tpl in Template.parse_all(self.etymology_section.strict_wikitext):
             if tpl.type in Template.TO_LINK_MAPPING:
                 for term in tpl.terms:
                     if self.valid_ascendant(w := Word(term.lemma, term.lang_code)):
@@ -133,7 +146,14 @@ class Word:
             links["redirects_to"] = [word]
         if word := self.accents_stripped_from():
             links["redirects_to"] = [word]
+        if word := self.inflection_of():
+            links["inflection_of"] = [word]
 
+        return links
+
+    NODE_STYLES = load_json("src/wiketym/data/styles.json")["nodes"]
+
+    def inflection_of(self):
         if infl_match := re.search(
             r"""
             \{\{
@@ -141,7 +161,9 @@ class Word:
                 |
                 inflection\ of
                 |
-                alt\ form)
+                alt\ form
+                |
+                alternative\ spelling\ of)
                 \|
                 (?P<lang>[^|]*)
                 \|
@@ -152,11 +174,7 @@ class Word:
             self.meaning_wikitext,
             flags=re.VERBOSE,
         ):
-            links["inflection_of"] = [Word(infl_match["lemma"], self.lang.code)]
-
-        return links
-
-    NODE_STYLES = load_json("src/wiketym/data/styles.json")["nodes"]
+            return Word(infl_match["lemma"], self.lang.code)
 
     @property
     def node(self):
@@ -170,7 +188,6 @@ class Word:
             text.append(
                 f"""<font point-size="10"><i>{"<br/>".join(textwrap.wrap(self.meaning, 30))}</i></font>"""
             )
-
 
         node = {}
         node["label"] = "<" + "<br/>".join(text) + ">"
@@ -203,6 +220,18 @@ class Word:
             if line.startswith(title):
                 return True
 
+    @staticmethod
+    def extract_meaning(wikitext):
+        if not (match := re.search(r"\# (.*)", wikitext)):
+            return
+        meaning = match[1]
+        meaning = re.sub(r"\{\{l\|\w+?\|([^|]+)\}\} ?", lambda m: m[1], meaning)
+        meaning = re.sub(r"\{\{.+?\}\} ?", "", meaning)
+        meaning = re.sub(r"<.+?> ?", "", meaning)
+        meaning = meaning.replace(":", "")
+        meaning = re.sub(r"\[\[.*?([^|]+?)\]\]", lambda m: m[1], meaning)
+        return meaning
+
     @property
     def meaning(self):
         if self.lang.code == "en":
@@ -210,13 +239,53 @@ class Word:
         if self._template_meaning:
             return self._template_meaning
 
-        if match := re.search(r"\# (.*)", self.meaning_wikitext):
-            meaning = match[1]
-        else:
-            meaning = ""
-        meaning = re.sub(r"\{\{l\|\w+?\|([^|]+)\}\} ?", lambda m: m[1], meaning)
-        meaning = re.sub(r"\{\{.+?\}\} ?", "", meaning)
-        meaning = re.sub(r"<.+?> ?", "", meaning)
-        meaning = meaning.replace(":", "")
-        meaning = re.sub(r"\[\[.*?([^|]+?)\]\]", lambda m: m[1], meaning)
-        return meaning
+        return self.extract_meaning(self.meaning_wikitext)
+
+    def all_meanings(self) -> list[Section]:
+        return [
+            meaning_section
+            for meaning_section in self.entry.filter(line=self.is_meaning_section)
+        ]
+
+    def disambiguate(self, reference: Word):
+        print("inferring", self, "from", reference)
+        if len(self.all_meanings()) < 2:
+            print("Nothing to choose from")
+            if (
+                self.redirects_to()
+                or self.equivalent_to()
+                or self.accents_stripped_from()
+                or self.inflection_of()
+            ):
+                self._reference_meaning = (
+                    reference.meaning or reference._reference_meaning
+                )
+            return
+        ref = None
+        print(self._template_meaning, reference.meaning, reference._reference_meaning)
+        if self._template_meaning:
+            print("has meaning from template")
+            ref = nlp(self._template_meaning)
+        elif reference.meaning:
+            print("take meaning from previous word")
+            ref = nlp(reference.meaning)
+        elif reference._reference_meaning:
+            print("take meaning from passed prev word")
+            ref = nlp(reference._reference_meaning)
+        if not ref:
+            return
+        sims = {
+            meaning_section: ref.similarity(nlp(meaning_section.strict_wikitext))
+            for meaning_section in self.all_meanings()
+        }
+        correct_meaning_section = sorted(sims, key=lambda x: sims[x], reverse=True)[0]
+        # print(self, reference)
+        if correct_meaning_section != self.meaning_section:
+            self.meaning_section = correct_meaning_section
+            self.etymology_section = self.entry.get(
+                number=".".join(
+                    c for c in correct_meaning_section.number.split(".")[:-1]
+                )
+            )
+            print(self.meaning_section)
+            print(self.etymology_section)

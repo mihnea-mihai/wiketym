@@ -36,8 +36,8 @@ class Template:
     class Type:
         INHERITED = {"inh", "inherited", "inh+"}
         BORROWED = {"bor", "borrowed", "bor+", "lbor"}
-        DERIVED = {"der", "derived", "der+", 'uder'}
-        BACKFORM = {'back-form', 'bf'}
+        DERIVED = {"der", "derived", "der+", "uder"}
+        BACKFORM = {"back-form", "bf"}
         ROOT = {"root"}
         AFFIX = {"af", "affix", "vrd", "compound"}  # no compound and vrd
         CONFIX = {"confix"}
@@ -48,7 +48,7 @@ class Template:
         COGNATE = {"cog"}
         COMPOUND = {"com"}
         W = {"w"}
-        DIRECTIONAL = INHERITED | BORROWED | DERIVED  | BACKFORM
+        DIRECTIONAL = INHERITED | BORROWED | DERIVED | BACKFORM
         MULTIPLE = AFFIX | SUFFIX | PREFIX | CONFIX
         NONDIRECTIONAL = MENTION | LINK
         ALL = DIRECTIONAL | MULTIPLE | NONDIRECTIONAL | W | ROOT
@@ -107,7 +107,7 @@ class Template:
 
         if self.type in self.Type.SUFFIX:
             lemma = terms[1].lemma
-            lemma = ('-' + lemma).replace('-*', '*-').replace('--', '-')
+            lemma = ("-" + lemma).replace("-*", "*-").replace("--", "-")
             terms[1] = Term(pos_params[0], lemma)
 
         key_mappings = {"alt": "alt", "gloss": "t", "t": "t", "tr": "tr", "id": "id"}

@@ -61,6 +61,9 @@ class Section:
     def get(self, **kwargs):
         return get(self, **kwargs, __default=Section())
 
+    def filter(self, **kwargs):
+        return filter(self, **kwargs)
+
     @cached_property
     def wikitext(self):
         next_section: Section = get(

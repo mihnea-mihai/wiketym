@@ -19,5 +19,6 @@
     "compound": "internally_from",
     "derived": "derived_from",
     "back-form": "internally_from",
-    "bf": "internally_from"
+    "bf": "internally_from",
+    "root": "derived_from"
 }
