@@ -16,8 +16,10 @@ class Query:
         allow_invalid: bool = False,
         max_count: int = 10,
         reduce: bool = True,
-        max_count_weak: int = 2,
+        max_count_weak: int = 3,
         ignore_affixes: bool = True,
+        merge: bool = True,
+        disambiguate: bool = True,
     ) -> None:
         self.start_words: str[Word] = start_words
         """Words for the current query."""
@@ -60,24 +62,30 @@ class Query:
                         if allow_invalid or related_word:
                             related_count += 1
                             if related_word not in self.handled_words | future_words:
-                                print(
-                                    "added",
-                                    related_word,
-                                    "to",
-                                    current_word,
-                                    related_count,
-                                )
+                                # print(
+                                #     "added",
+                                #     related_word,
+                                #     "to",
+                                #     current_word,
+                                #     related_count,
+                                # )
+                                if disambiguate:
+                                    print("DISAMBIIIIIIIIIIII")
+                                    related_word.disambiguate(current_word)
                                 future_words.add(related_word)
                                 self.G.add(related_word)
                             self.G.link(related_word, current_word, link_type)
                 self.handled_words.add(current_word)
 
-        # self.G.add_node("Legend", image="../outputs/test.svg", shape="none", label="")
+        if merge:
+            self.G.merge()
+
         if reduce:
             self.G.reduce().render(self.filename)
         else:
             self.G.render(self.filename)
         dump_json("src/wiketym/data/cache.json", API._cache)
+        Word.__new__.cache_clear()
 
     @property
     def filename(self):

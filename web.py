@@ -42,6 +42,8 @@ def generate():
         max_count=int(request.args["max_count"]),
         reduce=not request.args.get("all_connections"),
         ignore_affixes=not request.args.get("expand_affixes"),
+        merge=not request.args.get("keep_equivalences"),
+        disambiguate=not request.args.get("no_disambiguation"),
     )
     return send_file(f"outputs/{q.filename}.pdf", as_attachment=False)
 

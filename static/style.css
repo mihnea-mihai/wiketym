@@ -75,6 +75,7 @@ input[type=submit] {
 
 input[type="number"] {
     max-width: 3em;
+    font-size: smaller;
 }
 
 

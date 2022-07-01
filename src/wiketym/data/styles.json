@@ -26,11 +26,11 @@
             "fontcolor": "purple"
         },
         "redirects_to": {
-            "arrowhead": "crow",
-            "arrowtail": "crow"
+            "arrowhead": "onormal",
+            "arrowtail": "onormal"
         },
         "inflection_of": {
-            "arrowhead": "inv"
+            "arrowhead": "vee"
         },
         "mentioned": {
             "arrowhead": "none",

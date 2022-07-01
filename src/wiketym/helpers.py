@@ -5,6 +5,17 @@ Utilities.
 import unicodedata
 import json
 from typing import Any, Iterable, Iterator, Type
+import en_core_web_md
+
+model = en_core_web_md.load()
+
+
+def remove_stopwords(text):
+    return "".join(tok.text_with_ws for tok in model(text) if not tok.is_stop)
+
+
+def nlp(text):
+    return model(remove_stopwords(text))
 
 
 def load_json(path: str) -> dict:
