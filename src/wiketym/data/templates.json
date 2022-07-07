@@ -1,0 +1,17 @@
+{
+    "inh": {
+        "1": "lang_to",
+        "2": "lang_from",
+        "3": "term",
+        "4": "alt",
+        "alt": "alt",
+        "5": "t",
+        "t": "t",
+        "gloss": "t"
+    },
+    "affix": {
+        "1": "lang_name",
+        "altN": "altN",
+        "glossN": "glossN"
+    }
+}

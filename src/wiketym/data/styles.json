@@ -1,0 +1,48 @@
+{
+    "nodes": {
+        "invalid": {
+            "fontcolor": "gray50",
+            "color": "gray50",
+            "style": "dashed"
+        },
+        "start": {
+            "shape": "box",
+            "fontcolor": "red",
+            "color": "red",
+            "style": "bold"
+        }
+    },
+    "edges": {
+        "inherited_from": {
+            "color": "green",
+            "fontcolor": "green"
+        },
+        "borrowed_from": {
+            "color": "red",
+            "fontcolor": "red"
+        },
+        "derived_from": {
+            "color": "purple",
+            "fontcolor": "purple"
+        },
+        "redirects_to": {
+            "arrowhead": "onormal",
+            "arrowtail": "onormal"
+        },
+        "inflection_of": {
+            "arrowhead": "vee"
+        },
+        "mentioned": {
+            "arrowhead": "none",
+            "style": "dotted"
+        },
+        "linked": {
+            "arrowhead": "none",
+            "style": "dashed"
+        },
+        "internally_from": {
+            "color": "blue",
+            "fontcolor": "blue"
+        }
+    }
+}
