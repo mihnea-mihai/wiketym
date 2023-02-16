@@ -77,4 +77,4 @@ typing_extensions==4.2.0
 urllib3==1.26.9
 wasabi==0.9.1
 wcwidth==0.2.5
-Werkzeug==2.1.2
+Werkzeug==2.2.3
